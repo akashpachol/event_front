@@ -1,10 +1,12 @@
-
-import { cn } from "../utils/cn";
-import { useEffect, useRef, useState } from "react";
-
-export const BackgroundGradientAnimation = ({
-  gradientBackgroundStart = "#00adb5",
-  gradientBackgroundEnd = "#00adb5",
+"use client";
+import { cn } from "./cn";
+import React,{ ReactNode, useEffect, useRef, useState } from "react";
+interface AnimiProps {
+  children: ReactNode;
+}
+export const Animi:React.FC <AnimiProps> = ({
+  gradientBackgroundStart = "rgb(108, 0, 162)",
+  gradientBackgroundEnd = "rgb(0, 17, 82)",
   firstColor = "18, 113, 255",
   secondColor = "221, 74, 255",
   thirdColor = "100, 220, 255",
@@ -89,7 +91,7 @@ export const BackgroundGradientAnimation = ({
   return (
     <div
       className={cn(
-        "h-screen  relative overflow-hidden top-0 left-0 bg-[linear-gradient(40deg,var(--gradient-background-start),var(--gradient-background-end))]",
+        "h-screen w-screen relative overflow-hidden top-0 left-0 bg-[linear-gradient(40deg,var(--gradient-background-start),var(--gradient-background-end))]",
         containerClassName
       )}
     >

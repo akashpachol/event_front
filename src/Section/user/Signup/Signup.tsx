@@ -2,14 +2,25 @@ import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
-import { signupInputs } from "../../../types";
+import { ApiResponse, signupInputs } from "../../../utils/types";
+import { useNavigate, NavigateFunction } from "react-router-dom";
+import { toast } from "react-toastify";
+import { postRegister } from "../../../service/api/user/apiMethod";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../utils/redux/app/store";
 const Signup: React.FC = () => {
+
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
   const { register, handleSubmit, control, formState } =
     useForm<signupInputs>();
   const { errors } = formState;
+
+  const navigate: NavigateFunction = useNavigate();
+  const user = useSelector((state: RootState) => state.user);
+  console.log(user);
+ 
   const PasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -18,15 +29,31 @@ const Signup: React.FC = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  const onSubmit: SubmitHandler<signupInputs> = (data) =>
-    console.log(data, "jhjfhgjfh");
+    const onSubmit: SubmitHandler<signupInputs> = (payloads) => {
+      postRegister(payloads).then((response: ApiResponse) => {
+      
+
+        
+        if (response.status === 'success') {
+          toast.success(response.message);
+          navigate(`/otp`, { state: { email: payloads.email } });
+        } else {
+          toast.error(response.message);
+        }
+      })
+      .catch((error) => {
+        toast.error(error?.message);
+      });
+
+  };
+ 
   return (
-    <div className="w-full flex md:flex-row ">
-      <div className="authentication_div_1  bg-regal-blue">
+    <div className="w-full flex md:flex-row">
+      <div className="authentication_div_1 bg-regal-blue">
         <div className="w-full xl:w-1/2 p-6 text-center">
           <h1 className="text-4xl font-bold text-white mb-4">Welcome Back!</h1>
-          <p className=" text-white mb-4">
-            To keep connect with us please login with your personal info
+          <p className="text-white mb-4">
+            To keep connected with us please login with your personal info
           </p>
           <button
             type="submit"
@@ -66,12 +93,12 @@ const Signup: React.FC = () => {
           </div>
           <div className="mb-4">
             <label className="label" htmlFor="email">
-              email
+              Email
             </label>
             <input
               id="email"
               type="email"
-              placeholder="Enter your mail"
+              placeholder="Enter your email"
               className="input"
               {...register("email", {
                 required: {
@@ -86,7 +113,7 @@ const Signup: React.FC = () => {
             />
             <p className="text-red-600">{errors.email?.message}</p>
           </div>
-          <div className=" relative mb-4">
+          <div className="relative mb-4">
             <label className="label" htmlFor="password">
               Password
             </label>
@@ -106,11 +133,10 @@ const Signup: React.FC = () => {
                 },
               })}
             />
-
             <button
               type="button"
               onClick={PasswordVisibility}
-              className={`absolute inset-y-0 right-0  pr-3 flex items-center text-gray-700 ${
+              className={`absolute inset-y-0 right-0 pr-3 flex items-center text-gray-700 ${
                 errors.password ? "top-1" : "top-7"
               }`}
             >
@@ -119,13 +145,13 @@ const Signup: React.FC = () => {
             <p className="text-red-600">{errors.password?.message}</p>
           </div>
           <div className="relative mb-4">
-            <label className="label" htmlFor="password">
-              confirm password
+            <label className="label" htmlFor="confirmPassword">
+              Confirm Password
             </label>
             <input
-              id="password"
+              id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
-              placeholder="Enter your password"
+              placeholder="Confirm your password"
               className="input"
               {...register("confirmPassword", {
                 required: {
@@ -141,15 +167,14 @@ const Signup: React.FC = () => {
             <button
               type="button"
               onClick={ConfirmPasswordVisibility}
-              className={`absolute inset-y-0 right-0 top-6 pr-3 flex items-center text-gray-700 ${
-                errors.confirmPassword ? "top-1 " : "top-6"
+              className={`absolute inset-y-0 right-0 pr-3 flex items-center text-gray-700 ${
+                errors.confirmPassword ? "top-1" : "top-6"
               }`}
             >
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
             <p className="text-red-600">{errors.confirmPassword?.message}</p>
           </div>
-
           <button type="submit" className="bg-regal-blue authentication_button">
             Sign Up
           </button>
