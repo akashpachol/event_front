@@ -20,6 +20,7 @@
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.7.2",
     "clsx": "^2.1.1",
+    "formik": "^2.4.6",
     "framer-motion": "^11.2.4",
     "jsonwebtoken": "^9.0.2",
     "jwt-decode": "^4.0.0",
@@ -33,7 +34,9 @@
     "react-router-dom": "^6.23.1",
     "react-toastify": "^10.0.5",
     "styled-components": "^6.1.11",
-    "tailwind-merge": "^2.3.0"
+    "sweetalert2": "^11.11.0",
+    "tailwind-merge": "^2.3.0",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@hookform/devtools": "^4.3.1",

@@ -12,9 +12,9 @@ const Section3: React.FC = () => {
       if (window.innerWidth >= 1280) {
         setCardsToShow(4);
       } else if (window.innerWidth >= 768) {
-        setCardsToShow(3);
-      } else {
         setCardsToShow(2);
+      } else {
+        setCardsToShow(1);
       }
     };
 

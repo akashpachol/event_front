@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from '../Partials/Navbar';
+
 import { Link } from 'react-router-dom';
 import { profileData } from '../../../utils/Contents';
 import Profile from './contents/Profile';
@@ -11,7 +11,7 @@ const Settings:React.FC = () => {
 <div
   className="min-h-screen flex flex-col  "
  
->        <Navbar />
+>     
         <div className='flex-grow flex justify-center items-center lg:px-48'>
         <div className='w-1/3 '>
         <div className=" flex flex-col   hover:w-64 md:w-64 bg-white  text-gray-600 ">

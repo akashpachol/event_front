@@ -1,89 +1,6 @@
-import { ApiResponse, GoogleUser, signupInputs } from "../../../utils/types";
-import { apiCall } from "../apiCall";
+import { ApiResponse,  signupInputs } from "../../../utils/types";
+import { apiCall } from "./apiCall";
 import { userUrls } from "../endpoint";
-
-export const postRegister = (userData: signupInputs): Promise<ApiResponse> => {
-  return new Promise((resolve, reject) => {
-    try {
-      apiCall("post", userUrls.register, userData)
-        .then((response) => {
-          resolve(response);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    } catch (error) {
-      resolve({ status: "500", message: "Somethings wrong." });
-    }
-  });
-};
-
-export const postOTP = (otp: { otp: string }): Promise<ApiResponse> => {
-  return new Promise((resolve, reject) => {
-    try {
-      console.log(otp);
-      apiCall("post", userUrls.verifyOtp, otp)
-        .then((response) => {
-          resolve(response);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    } catch (error) {
-      resolve({ status: "500", message: "Somethings wrong." });
-    }
-  });
-};
-
-export const resendOtp = (email: { email: string }): Promise<ApiResponse> => {
-  return new Promise((resolve, reject) => {
-    try {
-      apiCall("post", userUrls.resendOtp, email)
-        .then((response) => {
-          resolve(response);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    } catch (error) {
-      resolve({ status: "500", message: "Somethings wrong." });
-    }
-  });
-};
-
-export const postLogin = (userData: signupInputs): Promise<ApiResponse> => {
-  return new Promise((resolve, reject) => {
-    try {
-      apiCall("post", userUrls.login, userData)
-        .then((response) => {
-          resolve(response);
-          console.log(response);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    } catch (error) {
-      resolve({ status: "500", message: "Somethings wrong." });
-    }
-  });
-};
-export const googleAuthenticate = (
-  userData: GoogleUser
-): Promise<ApiResponse> => {
-  return new Promise((resolve, reject) => {
-    try {
-      apiCall("post", userUrls.googleAuth, userData)
-        .then((response) => {
-          resolve(response);
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    } catch (error) {
-      resolve({ status: "500", message: "Somethings wrong." });
-    }
-  });
-};
 
 export const getUserDeatails = (
   userId: string | null | undefined
@@ -146,3 +63,28 @@ export const editProfile = (
     }
   });
 };
+
+
+
+
+
+export const getLocation = (
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${userUrls.getlocation}`;
+    
+
+      apiCall("get", url, null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+

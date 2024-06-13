@@ -3,10 +3,13 @@ import { useState } from "react";
 import { BiLayout } from "react-icons/bi";
 import { FaRegUserCircle } from "react-icons/fa";
 import { RiHome2Line } from "react-icons/ri";
-import { Link } from 'react-router-dom';
+import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
+import { logout } from '../../../utils/redux/slice/Auth/AdminAuthSlice';
+import { useDispatch } from 'react-redux';
 const Layout:React.FC = () => {
-
+  const dispatch = useDispatch();
+  const navigate: NavigateFunction = useNavigate();
     const [isMaxSidebar, setIsMaxSidebar] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     function toggleSidebar() {
@@ -16,11 +19,16 @@ const Layout:React.FC = () => {
         setIsSidebarOpen((prevState) => !prevState);
       }
     }
+
+    const handleSubmit=()=>{
+      dispatch(logout());
+      navigate('/adminLogin')
+    }
   
   return (
     <div className="w-full">
     <nav
-      className={`fixed w-full  z-30 flex bg-gray-100  duration-1000 dark:bg-[#0F172A] p-2 items-center justify-between h-16  ${
+      className={`fixed w-full  z-10 flex bg-gray-100  duration-1000 dark:bg-[#0F172A] p-2 items-center justify-between h-16  ${
         isMaxSidebar ? "sm:pl-12" : ""
       }`}
     >
@@ -46,7 +54,7 @@ const Layout:React.FC = () => {
         }`}
       >
         <div className="flex space-x-3 items-center px-3">
-          <div className="flex-none flex justify-center">
+          {/* <div className="flex-none flex justify-center">
             <div className="w-8 h-8 flex ">
               <img
                 src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShta_GXR2xdnsxSzj_GTcJHcNykjVKrCBrZ9qouUl0usuJWG2Rpr_PbTDu3sA9auNUH64&usqp=CAU"
@@ -54,10 +62,10 @@ const Layout:React.FC = () => {
                 className="shadow rounded-full object-cover"
               />
             </div>
-          </div>
+          </div> */}
 
-          <div className="hidden md:block text-sm md:text-md text-black dark:text-white">
-            John Doe
+          <div className="hidden md:block text-sm md:text-md text-black dark:text-white" onClick={handleSubmit} style={{cursor:"pointer"}}>
+            Logout
           </div>
         </div>
       </div>
@@ -102,14 +110,39 @@ const Layout:React.FC = () => {
         }` }
       >
         <Link  to={'/admin'}>
-        <div className="hover:ml-4 mt-5 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-500 flex flex-row items-center space-x-3" >
+        <div className="hover:ml-4 mt-5 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-lg transform ease-in-out duration-500 flex flex-row items-center space-x-3" >
           <RiHome2Line className="w-4 h-4" />
           <div className="text-white">Home</div>
         </div></Link>
         <Link   to={'/admin/usermanagment'}>
-        <div className="hover:ml-4 mt-5 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-full transform ease-in-out duration-500 flex flex-row items-center space-x-3" >
+        <div className="hover:ml-4 mt-5 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-lg transform ease-in-out duration-500 flex flex-row items-center space-x-3" >
           <FaRegUserCircle className="w-4 h-4" />
           <div className="text-white">User List</div>
+        </div>
+        </Link>
+        <Link   to={'/admin/eventtype'}>
+        <div className="hover:ml-4 mt-5 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-lg transform ease-in-out duration-500 flex flex-row items-center space-x-3" >
+          <FaRegUserCircle className="w-4 h-4" />
+          <div className="text-white">Event</div>
+        </div>
+        </Link>
+        <Link   to={'/admin/vendertype'}>
+        <div className="hover:ml-4 mt-5 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-lg transform ease-in-out duration-500 flex flex-row items-center space-x-3" >
+          <FaRegUserCircle className="w-4 h-4" />
+          <div className="text-white">Vender Type</div>
+        </div>
+        </Link>
+
+        <Link   to={'/admin/manager'}>
+        <div className="hover:ml-4 mt-5 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-lg transform ease-in-out duration-500 flex flex-row items-center space-x-3" >
+          <FaRegUserCircle className="w-4 h-4" />
+          <div className="text-white">Managers</div>
+        </div>
+        </Link>
+        <Link   to={'/admin/vender'}>
+        <div className="hover:ml-4 mt-5 w-full text-white hover:text-purple-500 dark:hover:text-blue-500 bg-[#1E293B] p-2 pl-8 rounded-lg transform ease-in-out duration-500 flex flex-row items-center space-x-3" >
+          <FaRegUserCircle className="w-4 h-4" />
+          <div className="text-white">Vender</div>
         </div>
         </Link>
       </div>
@@ -126,6 +159,9 @@ const Layout:React.FC = () => {
         </div>
         <div className="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
           <FaRegUserCircle className="w-4 h-4" />
+        </div>
+        <div className="hover:ml-4 justify-end pr-5 text-white hover:text-purple-500 dark:hover:text-blue-500 w-full bg-[#1E293B] p-3 rounded-full transform ease-in-out duration-300 flex">
+          <RiHome2Line className="w-4 h-4" />
         </div>
       </div> 
       

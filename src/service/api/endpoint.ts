@@ -1,39 +1,45 @@
+
+export const authUrls = {
+  register: "/auth/signup",
+  verifyOtp: "/auth/verify-otp",
+  resendOtp: "/auth/resend-otp",
+  login: "/auth/login",
+  googleAuth: "/auth/googleAuth",
+  logout:"/auth/logout",
+  forgotPassword: "/auth/forgotPassword",
+  resetPassword: "/auth/resetPassword",
+  forgotVerifyOtp: "/auth/verifyotp",
+}
 export const userUrls = {
-    register: "/auth/signup",
-    verifyOtp: "/auth/verify-otp",
-    resendOtp: "/auth/resend-otp",
-    login: "/auth/login",
-    googleAuth: "/auth/googleAuth",
-    logout:"/auth/logout",
-    forgotPassword: "/forgot-password",
-    forgotOtp: "/forgot-otp",
-    resetPassword: "/reset-password",
     getUserData: "/user/profile",
     editProfileImg: "/user/profileimage",
-   
-    userSuggestions: "/user-suggestions",
-    checkout: "/checkout-user",
-    validate: "/validate-payment",
-    allTransactions: "/get-transactions",
-    getNotifications: "/get-notifications",
-    userSearch :'/user-search'
+   getlocation:'/user/getVerifyLocation',
+
   };
 
   export const adminUrls = {
-
     login: "/adminAuth",
-    
-    logout:"/auth/logout",
-    forgotPassword: "/forgot-password",
-    forgotOtp: "/forgot-otp",
-    resetPassword: "/reset-password",
-    getUserData: "/user/profile",
-    editProfileImg: "/user/profileimage",
-   
-    userSuggestions: "/user-suggestions",
-    checkout: "/checkout-user",
-    validate: "/validate-payment",
-    allTransactions: "/get-transactions",
-    getNotifications: "/get-notifications",
-    userSearch :'/user-search'
+    getUserData: "/admin/users",
+    getMangerData: "/admin/manager",
+    getVenderData: "/admin/vender",
+    blockUser:"/admin/userblock",
+    addEvent:"/event/addeventtype",
+    getEvent:"/event/getevent",
+    blockEvent:"/event/eventblock",
+    addVenterType:"/vender/addvendertype",
+    blockVenterType:"/vender/vendertypeblock",
+    getVenterType:"/vender/getvendertype",
+    verifyVender:"/vender/verifyvender",
+    verifyLocation:"/location/verfyLocation",
+  };
+
+  export const managerUrls = {
+    addLocation:"/location/addLocation",
+    gelocationwithId:"/location/getlocationwithid",
+        getVender:'/vender/getVerifyVender'
+  };
+
+  export const venderUrls = {
+    addVender:"/vender/addVender",
+    geVenderwithId:"/vender/getvenderwithid",
   };

@@ -7,10 +7,7 @@ import { toast } from 'react-toastify';
 import { userDataTypes } from '../../../../utils/types';
 import Modal from './cropper/Modal';
 import ProfileModal from './ProfileModal';
- type ApiResponse= {
-  data: userDataTypes;
 
-}
 const Profile:React.FC = () => {
     const [showModal, setShowModal] = useState(false);
     const [showModal1, setShowModal1] = useState(false);
@@ -20,10 +17,11 @@ const Profile:React.FC = () => {
   const user = useSelector((state: RootState) => state.user);
   useEffect(() => {
     getDetails()
-  }, [api]);
+
+  }, [api,user.user]);
   const getDetails=()=>{
     getUserDeatails(user.userId)
-    .then((response:any|ApiResponse) => {
+    .then((response:any) => {
       if (response && response.data) {
         console.log(response.data);
         
@@ -37,7 +35,7 @@ const Profile:React.FC = () => {
     });
   }
 
-console.log(userData);
+
 
 
 
