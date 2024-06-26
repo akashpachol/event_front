@@ -3,32 +3,40 @@ import { useFormik } from "formik";
 import * as Yup from 'yup';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../utils/redux/app/store';
-import { eventDataTypes } from '../../Admin/EventType';
 import { getAllEventDeatails } from '../../../service/api/admin/apiMethod';
 import { addLocation } from '../../../service/api/manager/apiMethod';
 import { toast } from 'react-toastify';
+import { eventDataTypes } from '../../../utils/types';
+import Select from 'react-dropdown-select';
+
+
+
+
+
 
 const initialValues = {
     name: '',
     description: '',
     address: '',
     state: '',
-    type: '',
+    type: [],
     price: '',
-    capasity: '',
+    capasity:'',
   image: []
 };
 
 const validationSchema = Yup.object().shape({
     name: Yup.string()
-      .required('Location Name is required')
-      .min(3, 'Location Name must be at least 3 characters long'),
+      .required('vender Name is required')
+      .min(3, 'vender Name must be at least 3 characters long'),
     description: Yup.string()
       .required('Description is required')
       .min(5, 'Description must be at least 5 characters long'),
     address: Yup.string().required('Address is required'),
     state: Yup.string().required('State is required'),
-    type: Yup.string().required('Event Type is required'),
+    type: Yup.array()
+    .of(Yup.string().required('Event Type is required'))
+    .min(1, 'At least one Event Type must be selected'),
     price: Yup.number()
       .required('Regular price is required')
       .positive('Price must be positive')
@@ -74,17 +82,18 @@ const AddLocation: React.FC = () => {
       };
       console.log(data);
  
-        addLocation(data)
-          .then((response) => {
-            if (response.status === 'success') {
-              toast.success(response.message);
-            } else {
-              toast.error(response.message);
-            }
-          })
-          .catch((error) => {
-            toast.error(error?.message);
-          });
+
+      addLocation(data)
+        .then((response) => {
+          if (response.status === "success") {
+            toast.success(response.message);
+          } else {
+            toast.error(response.message);
+          }
+        })
+        .catch((error) => {
+          toast.error(error?.message);
+        });
       resetForm();
     },
   });
@@ -92,29 +101,29 @@ const AddLocation: React.FC = () => {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files) {
-      const uploadedImages = formik.values.image.slice(); 
+      const uploadedImages = formik.values.image.slice();
       Array.from(files).forEach((file) => {
         const reader = new FileReader();
         reader.onloadend = () => {
           const formData = new FormData();
-          formData.append('file', file);
-          formData.append('upload_preset', 'mycloud');
-          formData.append('folder', 'images');
+          formData.append("file", file);
+          formData.append("upload_preset", "mycloud");
+          formData.append("folder", "images");
 
-          fetch('https://api.cloudinary.com/v1_1/dp4edf7uw/image/upload', {
-            method: 'POST',
+          fetch("https://api.cloudinary.com/v1_1/dp4edf7uw/image/upload", {
+            method: "POST",
             body: formData,
           })
             .then((response) => response.json())
             .then((data) => {
-              const imageUrl:string = data.secure_url;
+              const imageUrl: string = data.secure_url;
               const newImage = { url: imageUrl, type: file.type };
 
               uploadedImages.push(newImage);
-              formik.setFieldValue('image', uploadedImages);
+              formik.setFieldValue("image", uploadedImages);
             })
             .catch((error) => {
-              console.error('Error uploading image to Cloudinary:', error);
+              console.error("Error uploading image to Cloudinary:", error);
             });
         };
         reader.readAsDataURL(file);
@@ -190,24 +199,22 @@ const AddLocation: React.FC = () => {
                                 </div>
                                 <div className="mb-4">
                   <label htmlFor="type" className="block text-gray-700">Event Type</label>
-                  <select 
-                    id="type" 
-                    className="input" 
-                    {...formik.getFieldProps('type')}
-                  >
-                    <option value="">Select Event Type</option>
-                    {eventData?.map((value)=>(
-    <option value={value._id}>{value.name}</option>
-                    ))}
-                   
-              
-                  </select>
+                  <Select
+
+    name="type"
+    className="input"
+    options={eventData.map(value => ({ value: value._id, label: value.name }))}
+    values={formik.values.type} 
+    onChange={(selectedOptions) => formik.setFieldValue('type', selectedOptions.map(option => option.value))}
+    multi
+    placeholder="Select Event Type"
+/>
+
                   {formik.touched.type && formik.errors.type ? (
                     <div className="text-red-500">{formik.errors.type}</div>
                   ) : null}
                 </div>
                             </div>
-
                             <div className="grid grid-cols-2 gap-4">
                 <div className="mb-4">
                   <label className="block text-gray-700" htmlFor='price'>Regular price</label>
@@ -278,5 +285,7 @@ const AddLocation: React.FC = () => {
     </section>
   );
 }
+
+
 
 export default AddLocation;

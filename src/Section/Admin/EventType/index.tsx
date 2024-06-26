@@ -7,14 +7,10 @@ import {  blockEvent, getAllEventDeatails } from '../../../service/api/admin/api
 import { toast } from 'react-toastify';
 import Modal from './Modal';
 import Swal from 'sweetalert2';
+import { eventDataTypes } from '../../../utils/types';
 
-export interface eventDataTypes {
-  _id: number;
-  name: string;
-  description: string;
-  image?: string;
-  isBlocked?: boolean;
-}
+
+
 
 const rowsPerPageOptions = [5, 10, 25];
 
@@ -34,16 +30,20 @@ const EventType: React.FC = () => {
   }, [api]);
 
   const getDetails = async () => {
+  
     try {
       const response = await getAllEventDeatails();
       if (response && Array.isArray(response.data)) {
         setEventData(response.data);
+
         setFilteredRows(response.data);
       } else {
         toast.error("No user data found");
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
+       
+        
         toast.error(error.message);
       } else {
         toast.error("An unknown error occurred");
@@ -89,11 +89,7 @@ const EventType: React.FC = () => {
       confirmButtonText: "Yes, delete it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: "blocked!",
-          text: "user is blocked.",
-          icon: "success"
-        });
+    
         blockEvent(id)
           .then((response) => {
             console.log(response);

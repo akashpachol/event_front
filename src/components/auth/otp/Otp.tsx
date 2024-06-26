@@ -101,7 +101,7 @@ const OtpPage: React.FC<OtpPageProps> = ({ onSubmit,style }) => {
   return (
         <div className="authentication_div_2">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Create an account
+            Verify Otp
           </h1>
           <form className="w-full max-w-sm" onSubmit={formik.handleSubmit} noValidate>
             <div className="mb-6">

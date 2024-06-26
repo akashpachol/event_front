@@ -36,7 +36,7 @@ const Venders:React.FC = () => {
             <div className="px-24 bg-gray-100 h-screen  py-12">
 
 
-            <BentoGrid className=" px-10">
+            <BentoGrid className=" ">
         {vender?.map((item, i) => (
           <BentoGridItem
             key={i}

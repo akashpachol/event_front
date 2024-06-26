@@ -17,7 +17,8 @@ export type signupInputs = {
     adminId?: string | null|undefined,
     admin?: string|null|undefined
     adminToken?:  string | null|undefined,
-
+    refreshToken?:string | null|undefined,
+    adminrefreshToken?:string | null|undefined,
   }
 
   export type venderSate={
@@ -26,6 +27,7 @@ export type signupInputs = {
     venderId?: string | null|undefined,
     vender?: string|null|undefined
     venderToken?:  string | null|undefined,
+    venderRefreshToken?:string | null|undefined,
 
   }
   export type managerSate={
@@ -34,7 +36,7 @@ export type signupInputs = {
     managerId?: string | null|undefined,
     manager?: string|null|undefined
     managerToken?:  string | null|undefined,
-
+    refreshToken?: string | null|undefined,
   }
 
   export type ErrorMessageProps ={
@@ -64,11 +66,14 @@ export type signupInputs = {
     message: string;
     token?:string;
     user?:string;
-    data?: object|userDataTypes;
+    data?: object;
     userId?:string;
     adminId?: string ,
     admin?: string,
     type?:string,
+    newAccessToken?:string,
+    refreshToken?:string,
+    role?:string
   }
 
   export type ApiError = {
@@ -146,20 +151,28 @@ export type signupInputs = {
     _id:string,
  }
 
- export type location={
-  _id:string;
-  name:string,
-  description:string,
-  address:string,
-  state:string,
-  type:string,
-  price:string,
-  capasity:string,
-  image:object,
-  manager?:string |null|undefined,
+ export type location = {
+  _id?: string;
+  name: string;
+  description: string;
+  address: string;
+  state: string;
+  type: string[];
+  price: string;
+  capasity: string;
+  image: string[];
+  manager?: string | null | undefined;
   verify?: boolean;
- }
-
+}
+ export type eventDataTypes= {
+  _id: number |string;
+  name: string;
+  description: string;
+  image?: string;
+  isBlocked?: boolean;
+  createdAt?:string;
+  updatedAt?:string
+}
 
  export type vender={
   name:string,
@@ -173,3 +186,12 @@ export type signupInputs = {
   vender?:string |null|undefined,
   verify?: boolean;
  }
+
+
+
+ export type eventState={
+  loading: boolean,
+
+data:eventDataTypes[]|null
+
+}

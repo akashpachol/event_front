@@ -12,6 +12,9 @@ export const apiCall = async <T>(method: string, url: string, data: T) => {
     } else if (method === "patch") {
       response = await managerApi.patch(url, data);
     }
+    else if (method === "put") {
+      response = await managerApi.put(url, data);
+    }
     return Promise.resolve(response?.data);
   } catch (error: unknown) {
     const apiError = error as ApiError;

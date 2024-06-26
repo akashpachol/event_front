@@ -1,15 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ApiResponse, initialSate } from "../../../types";
-const admin = JSON.parse(localStorage.getItem('admin') || 'null');
-const adminToken = JSON.parse(localStorage.getItem('adminToken') || 'null');
-const adminId = JSON.parse(localStorage.getItem('adminId') || 'null');
+
 
 
 const initialState: initialSate = {
     loading: false,
-    user: admin || null,
-    adminToken: adminToken || null,
-    userId: adminId || null,
+    user:  null,
+    adminToken:   null,
+    userId:   null,
+    adminrefreshToken:  null,
   };
 
 
@@ -24,17 +23,17 @@ const adminAuthSlice = createSlice({
         state.admin = action.payload.user.admin;
         state.adminToken = action.payload.user.token;
         state.adminId = action.payload.user.adminId;
-        localStorage.setItem('admin', JSON.stringify(action.payload.user.admin));
-        localStorage.setItem('adminToken', JSON.stringify(action.payload.user.token));
-        localStorage.setItem('adminId', JSON.stringify(action.payload.user.adminId));
+        state.adminrefreshToken = action.payload.user.refreshToken;
+
+
+
       },
       logout: (state) => {
         state.admin = null;
         state.adminToken = null;
         state.adminId = null;
-        localStorage.removeItem("admin");
-        localStorage.removeItem("adminToken");
-        localStorage.removeItem("adminId");
+    
+
       },
     },
   });

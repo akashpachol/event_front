@@ -1,5 +1,7 @@
 import React from 'react';
 import {cn } from "../../../../animation/cn";
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { location } from '../../../../utils/types';
 
 type BentoGridProps = {
   className?: string;
@@ -22,32 +24,25 @@ export const BentoGrid:React.FC<BentoGridProps> = ({
       </div>
     );
   };
-   
-  export const BentoGridItem = ({
-    id,
-    className,
-    title,
-    description,
-    header,
-    price
+
+  interface BentoGridItemProps {
+    item: location;
  
-  }: {
-    id:string;
-    className?: string;
-    title?: string | React.ReactNode;
-    description?: string | React.ReactNode;
-    header?: object;
-    price?:string;
-  
-  }) => {
+  }
+   
+  export const BentoGridItem:React.FC<BentoGridItemProps> = ({
+item
+ 
+  } ) => {
+    const navigate: NavigateFunction = useNavigate();
 
-    const handleView=(id:string)=>{
-console.log(id);
-
+    const handleView=(id:string|undefined)=>{
+      navigate('/manager/viewlocation',{state:id})
     }
 
-    const handleEdit=(id:string)=>{
+    const handleEdit=(id:string|undefined)=>{
       console.log(id);
+      navigate('/manager/editlocation',{state:{item}})
 
     }
 
@@ -57,12 +52,12 @@ console.log(id);
       <div
         className={cn(
           " rounded-xl group/bento hover:shadow-2xl transition duration-600 shadow-input  p-4   bg-gray-100 border border-transparent justify-between flex flex-col space-y-4",
-          className
+       
         )}
       >
-           {header && (
+           {item?.image && (
         <img
-          src={header[0]}
+          src={item.image[0]?.url}
           className="w-full transition-transform duration-700 ease-in-out transform hover:scale-105"
           alt=""
           height={400}
@@ -71,18 +66,18 @@ console.log(id);
         <div className="group-hover/bento:translate-x-2 transition duration-200">
       
           <div className="font-sans font-bold text-neutral-600 dark:text-neutral-200 mb-2 mt-2">
-            {title}
+            {item.name}
           </div>
           <div className="font-sans font-semibold text-neutral-600 dark:text-neutral-200 mb-2 mt-2">
-            { price}
+            { item.price}
           </div>
           <div className="font-sans font-normal text-neutral-600 text-xs dark:text-neutral-300">
-            {description}
+            {item.description}
           </div>
 
           <div className='flex mt-5'>
-            <button className='me-5 text-gray-700 hover:text-black border border-gray-700 hover:bg-gray-400 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  mb-2' onClick={()=>handleView(id)}>view</button>
-            <button className='text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  mb-2 '  onClick={()=>handleEdit(id)}>edit</button>
+            <button className='me-5 text-gray-700 hover:text-black border border-gray-700 hover:bg-gray-400 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  mb-2' onClick={()=>handleView(item._id)}>view</button>
+            <button className='text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center  mb-2 '  onClick={()=>handleEdit(item._id)}>edit</button>
             </div>
         </div>
       </div>

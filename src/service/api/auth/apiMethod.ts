@@ -141,3 +141,22 @@ export const reset= (userData: signupInputs): Promise<ApiResponse> => {
 
 
 
+export const refreshAccessToken = (refreshToken:string|null|undefined
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${authUrls.refreshToken}`;
+ 
+
+      apiCall("post", url, {refreshToken})
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};

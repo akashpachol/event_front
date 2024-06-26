@@ -7,8 +7,12 @@ import logo from '../../../assets/icons/unnamed.webp'
 import { RootState } from '../../../utils/redux/app/store';
 const Navbar:React.FC = () => {
   const dispatch = useDispatch();
+  
   const user = useSelector((state: RootState) => state.user);
-  console.log(user,'dashboard');
+
+  useEffect(() => {
+    console.log(user, 'dashboard');
+  }, [user]);
 
   const navigate: NavigateFunction = useNavigate();
     const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -111,12 +115,12 @@ const Navbar:React.FC = () => {
                 >
                   Hotels
                 </Link>
-                <Link
+                {/* <Link
                   to="/Venders"
                   className="text-gray-900  rounded-md px-3 py-2 text-sm font-medium"
                 >
                   Venders
-                </Link>
+                </Link> */}
                 <a
                   href="#"
                   className="text-gray-900 rounded-md px-3 py-2 text-sm font-medium"

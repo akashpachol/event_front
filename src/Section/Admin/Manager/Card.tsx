@@ -3,6 +3,7 @@ import {cn } from "../../../animation/cn";
 import { verifyLocation } from '../../../service/api/admin/apiMethod';
 import { toast } from 'react-toastify';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 type BentoGridProps = {
   className?: string;
@@ -25,6 +26,10 @@ export const BentoGrid:React.FC<BentoGridProps> = ({
       </div>
     );
   };
+
+  interface Header {
+    url: string;
+  }
    
   export const BentoGridItem = ({
     className,
@@ -37,7 +42,7 @@ export const BentoGrid:React.FC<BentoGridProps> = ({
     className?: string;
     title?: string | React.ReactNode;
     description?: string | React.ReactNode;
-    header?: object;
+    header?: Header[];
     verify:string;
     id:string
   }) => {
@@ -45,16 +50,29 @@ export const BentoGrid:React.FC<BentoGridProps> = ({
 
     const navigate: NavigateFunction = useNavigate();
     const handleVerifyLocation=(id:string)=>{
-console.log(id);
+      Swal.fire({
+        title: "Are you sure to verify location?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes"
+      }).then((result) => {
+        if (result.isConfirmed) {
+    
+          verifyLocation(id)
+          .then((response) => {
+            console.log(response);
+            navigate('/admin/manager')
+          })
+          .catch((error) => {
+            toast.error(error?.message);
+          });
+        }
+      });
 
-verifyLocation(id)
-.then((response) => {
-  console.log(response);
-  navigate('/admin/manager')
-})
-.catch((error) => {
-  toast.error(error?.message);
-});
+
 
     }
 
@@ -68,9 +86,9 @@ verifyLocation(id)
           className
         )}
       >
-           {header && (
+           {header && header.length > 0 && (
         <img
-          src={header[0]}
+          src={header[0].url}
           className="w-full transition-transform duration-700 ease-in-out transform hover:scale-105"
           alt=""
           height={400}
@@ -86,7 +104,7 @@ verifyLocation(id)
           </div>
       </div>
       <div>
-       {!verify?<button className='bg-red-500' onClick={()=>handleVerifyLocation(id)} >verify</button>:(<p className='bg-green-500'>verified</p>)} 
+       {!verify?<button className='bg-red-500' onClick={()=>handleVerifyLocation(id)} >verify</button>:(<p className='bg-green-500' >verified</p>)} 
       </div>
         
         </div>

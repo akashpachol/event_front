@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../../utils/redux/app/store';
 import { getUserDeatails } from '../../../../service/api/user/apiMethod';
 import { toast } from 'react-toastify';
-import { userDataTypes } from '../../../../utils/types';
+import { ApiResponse, userDataTypes } from '../../../../utils/types';
 import Modal from './cropper/Modal';
 import ProfileModal from './ProfileModal';
 
@@ -21,17 +21,19 @@ const Profile:React.FC = () => {
   }, [api,user.user]);
   const getDetails=()=>{
     getUserDeatails(user.userId)
-    .then((response:any) => {
+    .then((response:ApiResponse) => {
       if (response && response.data) {
         console.log(response.data);
         
-        setUserData(response.data);
+        setUserData(response.data as userDataTypes);
       } else {
         toast.error("No user data found");
       }
     })
     .catch((error) => {
-      toast.error(error.message);
+      // toast.error(error.message);
+      console.log(error);
+      
     });
   }
 
@@ -93,9 +95,6 @@ const Profile:React.FC = () => {
         </tbody>
     </table>
 </div>
-
-     
-      
     </div>
 
     {showModal1 ? (

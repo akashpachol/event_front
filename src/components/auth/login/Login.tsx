@@ -6,6 +6,9 @@ import { ApiResponse, signupInputs } from "../../../utils/types";
 import * as Yup from 'yup';
 import { useFormik } from "formik";
 import { loginSuccess } from "../../../utils/redux/slice/Auth/UserAuthSlice";
+import { loginSuccess as managerloginSuccess } from "../../../utils/redux/slice/Auth/managerAuthSlice";
+import { loginSuccess as venderloginSuccess } from "../../../utils/redux/slice/Auth/VenderAuthSlice";
+
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { NavigateFunction, useNavigate } from "react-router-dom";
@@ -103,8 +106,28 @@ const payload={
         
          
           
-          dispatch(loginSuccess({ user: response }));
-          navigate("/");
+      
+          console.log(role,"fjdkfhkdj",response.role)
+
+
+          if(role=='user' && response.role=='user'){
+            console.log(role);
+            dispatch(loginSuccess({ user: response }));
+            navigate("/");
+          }
+          else if(role=='manager'&& response.role=='manager'){
+            dispatch(managerloginSuccess({ user: response }));
+            navigate("/manager");
+
+          }
+
+          else if(role=='vender'&& response.role=='vender'){
+            dispatch(venderloginSuccess({ user: response }));
+            navigate("/vender");
+
+          }else{
+            toast.error('user not found');
+          }
         } else {
           toast.error(response.message);
         }
@@ -194,7 +217,7 @@ const payload={
           Not registered yet?  <a href={signUpPath}>Create an account</a>
         </p>
         <GoogleOAuthProvider
-          clientId="148557789553-sacq2fu1liun02j38c29srmi5ego060l.apps.googleusercontent.com"
+          clientId="793856567539-g571dvb9lv0qv1lh34hhv40ceerqha6d.apps.googleusercontent.com"
         >
           <button
             type="button"

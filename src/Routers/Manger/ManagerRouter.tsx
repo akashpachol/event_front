@@ -1,4 +1,3 @@
-
 import ManagerAuth from "./ManagerAuth";
 import ManagerLogin from "../../Section/Manager/auth/login/ManagerLogin";
 import MangerSignup from "../../Section/Manager/auth/Signup/Signup";
@@ -11,11 +10,10 @@ import Location from "../../Section/Manager/Location/Location";
 import AddLocation from "../../Section/Manager/Location/AddLocation";
 import VenderDetails from "../../Section/Manager/vender/Details";
 import Venders from "../../Section/Manager/vender/Vender";
-
+import EditLocation from "../../Section/Manager/Location/EditLocation";
+import ViewLocation from "../../Section/Manager/Location/ViewLocation";
 
 const ManagerRouter = () => {
-  
-
   return [
     {
       path: "/manager/login",
@@ -25,38 +23,21 @@ const ManagerRouter = () => {
         </>
       ),
     },
-
     {
       path: "/manager/signup",
-      element: (
-      
-          <MangerSignup />
-     
-      ),
+      element: <MangerSignup />,
     },
     {
       path: "/manager/forgotPassword",
-      element: (
-       
-          <MangerForgot />
-      
-      ),
+      element: <MangerForgot />,
     },
     {
       path: "/manager/reset",
-      element: (
-     
-          <MangerReset />
-       
-      ),
+      element: <MangerReset />,
     },
     {
       path: "/manager/otp",
-      element: (
-     
-          <MangerOtp />
-      
-      ),
+      element: <MangerOtp />,
     },
     {
       path: "/manager",
@@ -65,41 +46,36 @@ const ManagerRouter = () => {
           <Layout />
         </ManagerAuth>
       ),
-      children:[{
-        path: "/manager",
-        element: (
-       
-            <Dashboard />
-        
-        ),
-      },
-      {
-        path: "location",
-        element: (
-         
-            <Location />
-      
-        ),
-      },
-      {
-        path: "addlocation",
-        element: (
-         
-            <AddLocation />
-         
-        ),
-      },
-      {
-        path: "Venders",
-        element:(<Venders />),  
-        
-      },
-      {
-        path: "VenderDetails",
-        element:(   <VenderDetails />),  
-      
-      },
-    ]
+      children: [
+        {
+          path: "/manager",
+          element: <Dashboard />,
+        },
+        {
+          path: "location",
+          element: <Location />,
+        },
+        {
+          path: "addlocation",
+          element: <AddLocation />,
+        },
+        {
+          path: "editlocation",
+          element: <EditLocation />,
+        },
+        {
+          path: "viewlocation",
+          element: <ViewLocation />,
+        },
+        {
+          path: "Venders",
+          element: <Venders />,
+        },
+        {
+          path: "VenderDetails",
+          element: <VenderDetails />,
+        },
+      ],
     },
   ];
 };

@@ -123,7 +123,7 @@ const AddVenders: React.FC = () => {
         <div className="flex space-x-10 flex-wrap">
           <div className="w-full lg:w-9/12 mb-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Add New Location</h2>
+              <h2 className="text-2xl font-bold">Add New Venders</h2>
             </div>
           </div>
           <div className="w-full lg:w-7/12 mb-4">

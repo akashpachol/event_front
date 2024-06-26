@@ -54,7 +54,7 @@ export const BentoGrid:React.FC<BentoGridProps> = ({
       >
            {header && (
         <img
-          src={header[0]}
+          src={header[1].url}
           className=" transition-transform duration-700 ease-in-out h-60 transform hover:scale-105"
           alt=""
         

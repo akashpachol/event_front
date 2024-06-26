@@ -1,15 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ApiResponse, initialSate } from "../../../types";
 
-const user = JSON.parse(localStorage.getItem('user') || 'null');
-const token = JSON.parse(localStorage.getItem('token') || 'null');
-const userId = JSON.parse(localStorage.getItem('userId') || 'null');
 
 const initialState: initialSate = {
   loading: false,
-  user: user || null,
-  token: token || null,
-  userId: userId || null,
+  user:null,
+  token:null,
+  userId:null,
+  refreshToken: null,
 };
 
 const authSlice = createSlice({
@@ -20,17 +18,20 @@ const authSlice = createSlice({
       state.user = action.payload.user.user;
       state.token = action.payload.user.token;
       state.userId = action.payload.user.userId;
-      localStorage.setItem('user', JSON.stringify(action.payload.user.user));
-      localStorage.setItem('token', JSON.stringify(action.payload.user.token));
-      localStorage.setItem('userId', JSON.stringify(action.payload.user.userId));
+      state.refreshToken = action.payload.user.refreshToken;
+
+
     },
     logout: (state) => {
+      console.log('sucesss1',state.user,  state.token, state.userId,state.refreshToken);
+
       state.user = null;
       state.token = null;
       state.userId = null;
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-      localStorage.removeItem("userId");
+      state.refreshToken = null;
+
+console.log('sucesss',state.user,  state.token, state.userId,state.refreshToken);
+
     },
   },
 });

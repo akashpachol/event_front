@@ -58,7 +58,7 @@ const Layout:React.FC = () => {
     }
   
   return (
-    <div className="w-full ">
+    <div className="w-full bg-[#DFF5EB] min-h-screen h-full">
     <nav
       className={`fixed w-full  z-10 flex bg-gray-100  duration-1000  p-2 items-center justify-between h-16  ${
         isMaxSidebar ? "sm:pl-12" : ""
@@ -224,7 +224,7 @@ const Layout:React.FC = () => {
       className={`content ml-12 transform ease-in-out duration-500 pt-20 px-2 md:px-5 pb-4 ${
         isMaxSidebar ? "" : "sm:ml-60"
       }`}
-    >
+    > 
     <Outlet />
     </div>
   </div>

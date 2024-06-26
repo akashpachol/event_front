@@ -18,6 +18,28 @@ export const postLogin = (userData: signupInputs): Promise<ApiResponse> => {
     });
   };
 
+
+  
+export const refreshAccessToken = (refreshToken:string|null|undefined
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${adminUrls.refreshToken}`;
+ 
+
+      apiCall("post", url, {refreshToken})
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
   export const getAllUserDeatails = (
   ): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {

@@ -9,6 +9,7 @@ export const authUrls = {
   forgotPassword: "/auth/forgotPassword",
   resetPassword: "/auth/resetPassword",
   forgotVerifyOtp: "/auth/verifyotp",
+  refreshToken:"/auth/refreshAccessToken"
 }
 export const userUrls = {
     getUserData: "/user/profile",
@@ -19,6 +20,7 @@ export const userUrls = {
 
   export const adminUrls = {
     login: "/adminAuth",
+      refreshToken:"/adminAuth/refreshAccessToken",
     getUserData: "/admin/users",
     getMangerData: "/admin/manager",
     getVenderData: "/admin/vender",
@@ -35,7 +37,9 @@ export const userUrls = {
 
   export const managerUrls = {
     addLocation:"/location/addLocation",
+    editLocation:"/location/editLocation",
     gelocationwithId:"/location/getlocationwithid",
+    gelocationDetails:"/location/getLocationDetails",
         getVender:'/vender/getVerifyVender'
   };
 

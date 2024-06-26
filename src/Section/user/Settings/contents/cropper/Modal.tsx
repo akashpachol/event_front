@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import CropperDemo from './Cropper';
 import { cropFormProps } from '../../../../../utils/types';
 import { editProfileImg } from '../../../../../service/api/user/apiMethod';
@@ -10,8 +9,6 @@ import { RootState } from '../../../../../utils/redux/app/store';
 
 
 const Modal: React.FC <cropFormProps>= ({setShowModal}) => {
-
-
   const [open, setOpen] = useState<boolean>(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);

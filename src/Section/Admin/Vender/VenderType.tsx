@@ -8,10 +8,10 @@ import {
   TableRow,
   Paper,
   TablePagination,
-  Button,
+
   Typography,
 } from "@mui/material";
-import { grey, red } from "@mui/material/colors";
+import { grey } from "@mui/material/colors";
 
 import {
 
@@ -41,7 +41,7 @@ const VenderType: React.FC = () => {
   const [filteredRows, setFilteredRows] = useState<venderTypes[]>([]);
   const [showModal, setShowModal] = useState(false);
   const color = grey[200];
-  const redColor = red[500];
+
 
   useEffect(() => {
     getDetails();
@@ -98,7 +98,7 @@ const VenderType: React.FC = () => {
   const handleClick = (id: number) => {
     console.log(id, "jdhshdjh");
     Swal.fire({
-      title: "Are you sure to block event?",
+      title: "Are you sure to block vender type?",
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
@@ -107,11 +107,7 @@ const VenderType: React.FC = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: "blocked!",
-          text: "user is blocked.",
-          icon: "success",
-        });
+
         blockVenterType(id)
           .then((response) => {
             console.log(response);
@@ -141,7 +137,7 @@ const VenderType: React.FC = () => {
           className="text-white  bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 my-6"
           onClick={() => setShowModal(true)}
         >
-          Add Event
+          Add vender type
         </button>
         {showModal && <Modal setShowModal={setShowModal} setApi={setApi} api={api} />}
       </div>

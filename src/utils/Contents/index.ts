@@ -149,10 +149,10 @@ export const profileData:ProfileType[]=[
     name:'My Profile',
    path:''
 },
-{
-    name:'Change Password',
-   path:''
-},
+// {
+//     name:'Change Password',
+//    path:''
+// },
 {
     name:'Logout',
    path:''

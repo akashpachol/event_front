@@ -4,6 +4,8 @@ import { grey } from '@mui/material/colors';
 import Swal from 'sweetalert2'
 import { blockUser, getAllUserDeatails } from '../../../service/api/admin/apiMethod';
 import { toast } from 'react-toastify';
+import { logout } from '../../../utils/redux/slice/Auth/UserAuthSlice';
+import { useDispatch } from 'react-redux';
 
 export interface userDataTypes {
   _id: number;
@@ -23,20 +25,21 @@ const UserManagement: React.FC = () => {
   const [userData, setUserData] = useState<userDataTypes[]>([]);
   const [filteredRows, setFilteredRows] = useState<userDataTypes[]>([]);
   const color = grey[200];
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getDetails();
   }, [api]);
 
+
   const getDetails = async () => {
+    
     try {
       const response = await getAllUserDeatails();
       if (response && Array.isArray(response.data)) {
         setUserData(response.data);
         setFilteredRows(response.data);
-      } else {
-        toast.error("No user data found");
-      }
+      } 
     } catch (error: unknown) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -72,35 +75,34 @@ const UserManagement: React.FC = () => {
     setPage(0);
   };
 
-  const handleClick = (id: number) => {
-    console.log(id, "jdhshdjh");
+  const handleClick = async (id: number) => {
 
-    Swal.fire({
+  
+    const result = await Swal.fire({
       title: "Are you sure to block user?",
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "blocked!",
-          text: "user is blocked.",
-          icon: "success"
-        });
-        blockUser(id)
-          .then((response) => {
-            console.log(response);
-            setApi(!api);
-          })
-          .catch((error) => {
-            toast.error(error?.message);
-          });
-      }
+      confirmButtonText: "Yes, block it!"
     });
+  
+    if (result.isConfirmed) {
+      try {
+        await blockUser(id);
+
+        dispatch(logout());
+        console.log('hai');
+        
+        setApi((prev) => !prev);
+      } catch (error) {
+        const errorMessage = (error as Error).message;
+        toast.error(errorMessage);
+      }
+    }
   };
+  
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, filteredRows.length - page * rowsPerPage);
 

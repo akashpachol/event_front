@@ -16,7 +16,7 @@ export const BentoGrid:React.FC<BentoGridProps> = ({
     return (
       <div
         className={cn(
-          "grid grid-cols-1 md:grid-cols-3  gap-4  ",
+          "grid grid-cols-1 md:grid-cols-3  gap-5  ",
           className
         )}
       >
@@ -48,7 +48,7 @@ export const BentoGrid:React.FC<BentoGridProps> = ({
         
       <div
         className={cn(
-          " rounded-xl group/bento hover:shadow-2xl transition duration-600 shadow-input  p-4 w-96  bg-white border border-transparent justify-between flex flex-col space-y-4",
+          " rounded-xl  group/bento hover:shadow-2xl transition duration-600 shadow-input  p-4 w-96  bg-white border border-transparent justify-between flex flex-col space-y-4",
           className
         )}
       >

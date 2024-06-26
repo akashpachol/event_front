@@ -42,7 +42,7 @@ const CropperDemo: React.FC<CropperDemoProps> = ({ src, getCroppedFile }) => {
       })
       .catch((error) => {
         console.error("Error converting data URI to Blob:", error);
-      });
+      });   
   };
 
   return (

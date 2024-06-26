@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 
 import Swal from 'sweetalert2';
 import { userDataTypes } from '../../../utils/types';
-import { getAlllocationwithId } from '../../../service/api/manager/apiMethod';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { getAllVenderwithId } from '../../../service/api/vender/apiMethod';
 
@@ -77,20 +76,17 @@ const Venders: React.FC = () => {
   const handleClick = (id: string) => {
     console.log(id, "jdhshdjh");
     Swal.fire({
-      title: "Are you sure to block event?",
+      title: "Are you sure to block vender",
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
+      confirmButtonText: "Yes, block it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: "blocked!",
-          text: "user is blocked.",
-          icon: "success"
-        });
+   
+   console.log(result);
    
       }
     });

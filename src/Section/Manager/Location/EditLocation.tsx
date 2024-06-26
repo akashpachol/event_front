@@ -1,22 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../utils/redux/app/store";
 import { getAllEventDeatails } from "../../../service/api/admin/apiMethod";
-import { addLocation } from "../../../service/api/manager/apiMethod";
+import { editLocation } from "../../../service/api/manager/apiMethod";
 import { toast } from "react-toastify";
-
-const initialValues = {
-  name: "",
-  description: "",
-  address: "",
-  state: "",
-  type: "",
-  price: "",
-  capasity: "",
-  image: [],
-};
+import { eventDataTypes } from "../../../utils/types";
+import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
+import Select from "react-dropdown-select";
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -27,7 +19,9 @@ const validationSchema = Yup.object().shape({
     .min(5, "Description must be at least 5 characters long"),
   address: Yup.string().required("Address is required"),
   state: Yup.string().required("State is required"),
-  type: Yup.string().required("Event Type is required"),
+  type: Yup.array()
+    .of(Yup.string().required("Event Type is required"))
+    .min(1, "At least one Event Type must be selected"),
   price: Yup.number()
     .required("Regular price is required")
     .positive("Price must be positive")
@@ -58,35 +52,44 @@ const validationSchema = Yup.object().shape({
 
 const EditLocation: React.FC = () => {
   const [eventData, setEventData] = useState<eventDataTypes[]>([]);
+  const [initialSelectedTypes, setInitialSelectedTypes] = useState<{value: string, label: string}[]>([]);
   const managerData = useSelector((state: RootState) => state.manager);
-  useEffect(() => {
-    getDetails();
-  }, []);
+  const event = useSelector((state: RootState) => state.event);
 
-  const getDetails = async () => {
-    try {
-      const response = await getAllEventDeatails();
-      if (response && Array.isArray(response.data)) {
-        setEventData(response.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const location = useLocation();
+  const { item } = location.state;
+  const navigate: NavigateFunction = useNavigate();
+  const dispatch = useDispatch();
+  
+  const initialImages = item?.image?.map((img) => ({
+    url: img.url,
+    type: img.type || "image/jpeg", // Default type if type is not provided
+  }));
+
   const formik = useFormik({
-    initialValues,
+    initialValues: {
+      name: item?.name || "",
+      description: item?.description || "",
+      address: item?.address || "",
+      state: item?.state || "",
+      type: initialSelectedTypes.map(type => type.value) || [],
+      price: item?.price || "",
+      capasity: item?.capasity || "",
+      image: initialImages || [],
+    },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
       const data = {
         ...values,
         manager: managerData.managerId,
+        id: item._id,
       };
-      console.log(data);
 
-      addLocation(data)
+      editLocation(data)
         .then((response) => {
           if (response.status === "success") {
             toast.success(response.message);
+            navigate('/manager/location');
           } else {
             toast.error(response.message);
           }
@@ -97,6 +100,32 @@ const EditLocation: React.FC = () => {
       resetForm();
     },
   });
+
+  useEffect(() => {
+    getDetails();
+  }, []);
+
+  const getDetails = async () => {
+    try {
+      const response = await getAllEventDeatails();
+      if (response.status === 'success') {
+        setEventData(response.data);
+
+        const selectedTypes = item.type.map((typeId: string) => {
+          const eventType = response.data.find((event: eventDataTypes) => event._id === typeId);
+          return {
+            value: typeId,
+            label: eventType ? eventType.name : "",
+          };
+        });
+
+        setInitialSelectedTypes(selectedTypes);
+        formik.setFieldValue("type", selectedTypes.map(type => type.value));
+      }
+    } catch (error) {
+      console.error("Failed to fetch event details:", error);
+    }
+  };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -137,7 +166,7 @@ const EditLocation: React.FC = () => {
         <div className="flex space-x-10 flex-wrap">
           <div className="w-full lg:w-9/12 mb-4">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold">Add New Location</h2>
+              <h2 className="text-2xl font-bold">Edit Location</h2>
             </div>
           </div>
           <div className="w-full lg:w-7/12 mb-4">
@@ -156,9 +185,9 @@ const EditLocation: React.FC = () => {
                   id="name"
                   {...formik.getFieldProps("name")}
                 />
-                {formik.touched.name && formik.errors.name ? (
+                {formik.touched.name && typeof formik.errors.name === "string" && (
                   <div className="text-red-500">{formik.errors.name}</div>
-                ) : null}
+                )}
               </div>
               <div className="mb-4">
                 <label htmlFor="description" className="block text-gray-700">
@@ -170,11 +199,9 @@ const EditLocation: React.FC = () => {
                   id="description"
                   {...formik.getFieldProps("description")}
                 />
-                {formik.touched.description && formik.errors.description ? (
-                  <div className="text-red-500">
-                    {formik.errors.description}
-                  </div>
-                ) : null}
+                {formik.touched.description && typeof formik.errors.description === "string" && (
+                  <div className="text-red-500">{formik.errors.description}</div>
+                )}
               </div>
               <div className="mb-4">
                 <label htmlFor="address" className="block text-gray-700">
@@ -187,9 +214,9 @@ const EditLocation: React.FC = () => {
                   id="address"
                   {...formik.getFieldProps("address")}
                 />
-                {formik.touched.address && formik.errors.address ? (
+                {formik.touched.address && typeof formik.errors.address === "string" && (
                   <div className="text-red-500">{formik.errors.address}</div>
-                ) : null}
+                )}
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="mb-4">
@@ -203,30 +230,36 @@ const EditLocation: React.FC = () => {
                     id="state"
                     {...formik.getFieldProps("state")}
                   />
-                  {formik.touched.state && formik.errors.state ? (
+                  {formik.touched.state && typeof formik.errors.state === "string" && (
                     <div className="text-red-500">{formik.errors.state}</div>
-                  ) : null}
+                  )}
                 </div>
                 <div className="mb-4">
                   <label htmlFor="type" className="block text-gray-700">
                     Event Type
                   </label>
-                  <select
-                    id="type"
+                  <Select
+                    name="type"
                     className="input"
-                    {...formik.getFieldProps("type")}
-                  >
-                    <option value="">Select Event Type</option>
-                    {eventData?.map((value) => (
-                      <option value={value._id}>{value.name}</option>
-                    ))}
-                  </select>
-                  {formik.touched.type && formik.errors.type ? (
+                    options={eventData.map((value) => ({
+                      value: value._id,
+                      label: value.name,
+                    }))}
+                    values={initialSelectedTypes}
+                    onChange={(selectedOptions) =>
+                      formik.setFieldValue(
+                        "type",
+                        selectedOptions.map((option) => option.value)
+                      )
+                    }
+                    multi
+                    placeholder="Select Event Type"
+                  />
+                  {formik.touched.type && typeof formik.errors.type === "string" && (
                     <div className="text-red-500">{formik.errors.type}</div>
-                  ) : null}
+                  )}
                 </div>
               </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <div className="mb-4">
                   <label className="block text-gray-700" htmlFor="price">
@@ -238,12 +271,12 @@ const EditLocation: React.FC = () => {
                     className="input"
                     {...formik.getFieldProps("price")}
                   />
-                  {formik.touched.price && formik.errors.price ? (
+                  {formik.touched.price && typeof formik.errors.price === "string" && (
                     <div className="text-red-500">{formik.errors.price}</div>
-                  ) : null}
+                  )}
                 </div>
                 <div className="mb-4">
-                  <label className="block text-gray-700" htmlFor="capacity">
+                  <label className="block text-gray-700" htmlFor="capasity">
                     Capacity
                   </label>
                   <input
@@ -252,14 +285,13 @@ const EditLocation: React.FC = () => {
                     className="input"
                     {...formik.getFieldProps("capasity")}
                   />
-                  {formik.touched.capasity && formik.errors.capasity ? (
+                  {formik.touched.capasity && typeof formik.errors.capasity === "string" && (
                     <div className="text-red-500">{formik.errors.capasity}</div>
-                  ) : null}
+                  )}
                 </div>
               </div>
             </div>
           </div>
-
           <div className="w-full lg:w-4/12 mb-4">
             <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="input-upload">
@@ -297,14 +329,15 @@ const EditLocation: React.FC = () => {
                     onChange={handleImageUpload}
                   />
                 </div>
-                {formik.errors.image && formik.touched.image && (
-                  <div className="text-red-500 text-sm">
-                    {formik.errors.image}
-                  </div>
+                {formik.errors.image && formik.touched.image && typeof formik.errors.image === "string" && (
+                  <div className="text-red-500 text-sm">{formik.errors.image}</div>
                 )}
               </div>
               <div className="mt-5">
-                <button className="bg-white border border-gray-300 rounded font-sm mr-5 text-gray-700 px-4 py-2 hover:bg-gray-100">
+                <button 
+                  type="button"
+                  onClick={() => navigate('/manager/location')}
+                  className="bg-white border border-gray-300 rounded font-sm mr-5 text-gray-700 px-4 py-2 hover:bg-gray-100">
                   Cancel
                 </button>
                 <button type="submit" className="manager_button">

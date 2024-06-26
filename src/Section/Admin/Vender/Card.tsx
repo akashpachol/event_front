@@ -3,6 +3,7 @@ import {cn } from "../../../animation/cn";
 import {  verifyVender } from '../../../service/api/admin/apiMethod';
 import { toast } from 'react-toastify';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 type BentoGridProps = {
   className?: string;
@@ -15,7 +16,7 @@ export const BentoGrid:React.FC<BentoGridProps> = ({
     return (
       <div
         className={cn(
-          "grid grid-cols-1 md:grid-cols-3  gap-4 w-full ",
+          "grid grid-cols-1 md:grid-cols-3  gap-5 w-full ",
           className
         )}
       >
@@ -43,16 +44,33 @@ export const BentoGrid:React.FC<BentoGridProps> = ({
   }) => {
     const navigate: NavigateFunction = useNavigate();
     const handleVerifyVender=(id:string)=>{
+
+
+
+      Swal.fire({
+        title: "Are you sure to verify service?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes"
+      }).then((result) => {
+        if (result.isConfirmed) {
+    
+          verifyVender(id)
+          .then((response) => {
+            console.log(response);
+          navigate('/admin/vender')
+          })
+          .catch((error) => {
+            toast.error(error?.message);
+          });
+        }
+      });
+
 console.log(id);
 
-verifyVender(id)
-.then((response) => {
-  console.log(response);
-navigate('/admin/vender')
-})
-.catch((error) => {
-  toast.error(error?.message);
-});
 
     }
 
@@ -84,7 +102,7 @@ navigate('/admin/vender')
           </div>
       </div>
       <div>
-       {!verify?<button className='bg-red-500' onClick={()=>handleVerifyVender(id)} >verify</button>:(<p className='bg-green-500'>verified</p>)} 
+       {!verify?<button className='bg-red-500' onClick={()=>handleVerifyVender(id)} >verify</button>:(<p className='bg-green-500' >verified</p>)} 
       </div>
         
         </div>

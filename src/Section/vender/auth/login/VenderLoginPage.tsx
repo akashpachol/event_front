@@ -17,7 +17,7 @@ const VenderLoginPage = () => {
     }, [user.venderToken, navigate]);
   return (
     <div>
-      <LoginApi role={'vender'} loginSuccess={loginSuccess}  style={{bg_color:'user_div_1',button:"user_button"}} path={"/vender"} forgotPath={'/vender/forgotPassword'}  />
+      <LoginApi role={'vender'} loginSuccess={loginSuccess}  style={{bg_color:'user_div_1',button:"user_button"}} path={"/vender"} forgotPath={'/vender/forgotPassword'} signUpPath="/vender/signup"  />
     </div>
   );
 }

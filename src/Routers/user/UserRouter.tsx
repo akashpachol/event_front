@@ -60,7 +60,7 @@ const UserRouters = () => {
         },
         {
           path: "location",
-          element:(   <UserAuth><Location /></UserAuth>),  
+          element:(   <Location />),  
         
         },
         {
