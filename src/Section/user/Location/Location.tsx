@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { BentoGrid, BentoGridItem } from './LocationGrid';
+import { BentoGrid, BentoGridItem } from "./Animation/Card";
 import { getLocation } from '../../../service/api/user/apiMethod';
 import { toast } from 'react-toastify';
 import { location } from '../../../utils/types';
@@ -37,13 +37,9 @@ const Location:React.FC = () => {
 
 
             <BentoGrid className=" px-10">
-        {location?.map((item, i) => (
+        {location?.map((item) => (
           <BentoGridItem
-            key={i}
-            title={item.name}
-            description={item.description}
-            header={item.image}
-            className={""}
+          item={item}
           />
         ))}
       </BentoGrid>

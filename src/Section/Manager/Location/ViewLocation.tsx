@@ -1,8 +1,12 @@
-"use client";
+
 import { useLocation } from "react-router-dom";
 import { LayoutGrid } from "./LayoutGrid";
-import { useEffect, useState } from "react";
-import { location } from "../../../utils/types";
+import { useCallback, useEffect, useState } from "react";
+import {
+  ApiResponseLocation,
+  eventDataTypes,
+  location,
+} from "../../../utils/types";
 import { getlocationDetails } from "../../../service/api/manager/apiMethod";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
@@ -10,16 +14,31 @@ import { RootState } from "../../../utils/redux/app/store";
 
 const ViewLocation = () => {
   const [locationData, setLocationData] = useState<location | null>(null);
-  const [data, setData] = useState();
+  const [data, setData] = useState<eventDataTypes[] | null>(null);
   const event = useSelector((state: RootState) => state.event);
   const location = useLocation();
   const receivedData = location.state;
-  console.log(receivedData, "jhjfdf");
-  useEffect(() => {
-    getDetails();
+  const getDetails = useCallback(() => {
+    getlocationDetails(receivedData)
+      .then((response: ApiResponseLocation) => {
+        if (response.data) {
+          setLocationData(response.data as location);
+        } else {
+          toast.error("No location data found");
+        }
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      });
   }, [receivedData]);
 
-  const [state, setState] = useState([]);
+  useEffect(() => {
+    getDetails();
+  }, [getDetails]);
+
+  const [state, setState] = useState<
+    { id: number; thumbnail: string; className: string }[]
+  >([]);
 
   useEffect(() => {
     if (locationData?.image) {
@@ -30,30 +49,12 @@ const ViewLocation = () => {
           index == 0 ? "md:row-span-2 col-span-2" : "row-span-1 col-span-1",
       }));
       setState(cards);
-
-      console.log(locationData.type, "locationData");
-      console.log(event.data, "event");
-      const value = event.data?.filter((location) =>
-        locationData.type.includes(location._id)
+      const filteredEvents = event.data?.filter((event_data) =>
+        locationData.type.some((type) => type === event_data._id)
       );
-      setData(value);
+      setData(filteredEvents ?? null);
     }
-  }, [locationData]);
-  const getDetails = () => {
-    getlocationDetails(receivedData)
-      .then((response) => {
-        if (response) {
-          setLocationData(response.data);
-        } else {
-          toast.error("No user data found");
-        }
-      })
-      .catch((error) => {
-        toast.error(error.message);
-      });
-  };
-
-  console.log(data, "hdhsdh");
+  }, [locationData, event.data]);
 
   return (
     <div className="  py-20  w-full bg-white">
@@ -62,21 +63,80 @@ const ViewLocation = () => {
       </div>
 
       <div className="card mt-5 mx-20 px-10 border flex">
-        <div className="w-1/2">
-          <p className="text-2xl ">Overview</p>
-          <p>{locationData?.description}</p>
-          <p>{locationData?.address}</p>
-          <p>{locationData?.state}</p>
-          <p>{locationData?.price}</p>
-          <p>
-            {data?.map((value) => (
-              <div>{value.name}</div>
-            ))}
-          </p>
-        </div>
-        <div className="w-1/2 mt-5">
-          <button className="manager_button">book event</button>
-        </div>
+        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+          <tbody>
+            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <th
+                scope="row"
+                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+              >
+                Name
+              </th>
+
+              <td className="px-6 py-4">{locationData?.name}</td>
+            </tr>
+            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <th
+                scope="row"
+                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+              >
+                Address
+              </th>
+
+              <td className="px-6 py-4 break-words">
+                {locationData?.address},{locationData?.state}
+              </td>
+            </tr>
+            <tr className="bg-white border-b dark:bg-gray-800">
+              <th
+                scope="row"
+                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+              >
+                description
+              </th>
+
+              <td className="px-6 py-4">{locationData?.description}</td>
+            </tr>
+            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <th
+                scope="row"
+                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+              >
+                price
+              </th>
+
+              <td className="px-6 py-4">{locationData?.price}</td>
+            </tr>
+            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <th
+                scope="row"
+                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+              >
+                capasity
+              </th>
+
+              <td className="px-6 py-4">{locationData?.capasity}</td>
+            </tr>
+
+            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+              <th
+                scope="row"
+                className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+              >
+                Events
+              </th>
+
+              <td className="px-6 py-4">
+                {data?.map((value, index) => (
+                  <span key={index}>
+                    {value.name}
+                    {index < data.length - 1 ? ", " : ""}
+                  </span>
+                ))}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   );

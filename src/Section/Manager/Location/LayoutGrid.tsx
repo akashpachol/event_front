@@ -1,8 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import  { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "../../../animation/cn";
-// import Image from "next/image";
+import ImageIcon from "../../../assets/icons/istockphoto-1222357475-612x612.jpg";
 type Card = {
   id: number;
 
@@ -57,13 +57,14 @@ export const LayoutGrid = ({ cards }: { cards: Card[] }) => {
         )}
         animate={{ opacity: selected?.id ? 0.3 : 0 }}
       />
-      <div className="col-span-1  flex justify-center ">
-   <div className="  my-auto ">
-   <img src="https://cdn.venuemonk.com/view_more_logo.svg" className="ms-6" /><p>{cards.length} Photos</p>
+      {cards.length-4>0?(   <div className="col-span-1  flex justify-center ">
+   <div className="  my-auto flex-col justify-center">
+   <img src={ImageIcon}  className="ms-6 w-24" /><p className="ms-8">{cards.length-4} Photos</p>
 
    </div>
         
-          </div>
+          </div>):''}
+   
 
     
     </div>

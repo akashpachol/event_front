@@ -1,6 +1,41 @@
-import { ApiResponse,  signupInputs } from "../../../utils/types";
+import { ApiResponse,  ApiResponseOfWallet,  booking,  signupInputs } from "../../../utils/types";
 import { apiCall } from "./apiCall";
 import { userUrls } from "../endpoint";
+import { formatISO } from 'date-fns';
+interface RazorpayResponse {
+  razorpay_payment_id: string;
+}
+
+interface RazorpayOptions {
+  key: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpayResponse) => void;
+  theme: {
+    color: string;
+  };
+}
+
+interface RazorpayInstance {
+  open(): void;
+}
+
+interface Razorpay {
+  new (options: RazorpayOptions): RazorpayInstance;
+}
+
+declare global {
+  interface Window {
+    Razorpay: Razorpay;
+  }
+}
+
+interface ApiTimeResponse {
+  status: string;
+  message: string;
+  data?: string [] | null;
+}
 
 export const getUserDeatails = (
   userId: string | null | undefined
@@ -74,6 +109,218 @@ export const getLocation = (
     try {
       const url = `${userUrls.getlocation}`;
     
+
+      apiCall("get", url, null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+export const filterVender = (
+  vender: string[]
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${userUrls.filterVender}`;
+    
+
+      apiCall("post", url, {type:vender})
+        .then((response) => { 
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+export const bookingEvent = (
+  booking:booking
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${userUrls.bookingEvent}`;
+    
+
+      apiCall("post", url, booking)
+        .then((response) => { 
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+export const paymentEvent = (): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${userUrls.paymentEvent}`;
+
+      apiCall("post", url, null)
+        .then((response) => { 
+          if (response.status !== "success") {
+            throw new Error(response.message);
+          }
+          const { data } = response;
+          console.log("Data received from paymentEvent API:", data);
+          
+          // Ensure data.amount is valid
+          if (!data.amount) {
+            throw new Error("Amount is not defined in the response data");
+          }
+
+          const options = {
+            key: "rzp_test_rwud39pugiL6zo",
+            name: "Event portal",
+            description: "Some Description",
+            order_id: data.id,
+            handler: async (response: RazorpayResponse) => {
+              try {
+                console.log("Razorpay response:", response);
+                const paymentId = response.razorpay_payment_id;
+                const captureUrl = `${userUrls.paymentcapture}/${paymentId}`;
+                
+                console.log("Making capture API call with amount:", data.amount);
+
+                const captureResponse = await apiCall("post", captureUrl, { amount: data.amount });
+                console.log("Capture API response:", captureResponse);
+                
+                resolve(captureResponse);
+              } catch (err) {
+                console.error("Error in handler:", err);
+                reject(err);
+              }
+            },
+            theme: {
+              color: "#686CFD",
+            },
+          };
+
+          const rzp1 = new window.Razorpay(options);
+          rzp1.open();
+        })
+        .catch((err) => {
+          console.error("Error in paymentEvent API call:", err);
+          reject(err);
+        });
+    } catch (error) {
+      console.error("Error in paymentEvent:", error);
+      resolve({ status: "500", message: "Something went wrong" });
+    }
+  });
+};
+
+export const getBookingHistory = (
+  userId: string | null | undefined
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${userUrls.bookingHistory}/${userId}`;
+      console.log(url, "lfkldfdlkfdl");
+
+      apiCall("get", url, null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+export const getBookingDetails = (
+  bookingId: string | null | undefined
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${userUrls.bookingDetails}/${bookingId}`;
+
+
+      apiCall("get", url, null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+export const checkAvailability = (
+  date:Date|null,locationData:string
+): Promise<ApiTimeResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${userUrls.checkAvailability}`;
+      console.log(date,'    const selectedDate = addDays(new Date(value), 0);');
+      const formattedDate = date ? formatISO(date) : null;
+    const data={date:formattedDate,locationData}
+
+
+      apiCall("post", url,data )
+        .then((response) => { 
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+export const bookingCancel = (
+  id:string|undefined,reason:string
+): Promise<ApiTimeResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${userUrls.bookingCancel}`;
+      const data={id,reason}
+
+      apiCall("post", url, data)
+        .then((response) => { 
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+export const getWallet = (
+  userId: string | null | undefined
+): Promise<ApiResponseOfWallet> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${userUrls.getWallet}/${userId}`;
 
       apiCall("get", url, null)
         .then((response) => {

@@ -6,14 +6,8 @@ import { blockUser, getAllUserDeatails } from '../../../service/api/admin/apiMet
 import { toast } from 'react-toastify';
 import { logout } from '../../../utils/redux/slice/Auth/UserAuthSlice';
 import { useDispatch } from 'react-redux';
+import { userDataTypes } from '../../../utils/types';
 
-export interface userDataTypes {
-  _id: number;
-  username: string;
-  email: string;
-  phone?: string;
-  isBlocked?: boolean;
-}
 
 const rowsPerPageOptions = [5, 10, 25];
 
@@ -75,7 +69,7 @@ const UserManagement: React.FC = () => {
     setPage(0);
   };
 
-  const handleClick = async (id: number) => {
+  const handleClick = async (id: string) => {
 
   
     const result = await Swal.fire({
@@ -130,7 +124,7 @@ const UserManagement: React.FC = () => {
             {(rowsPerPage > 0
               ? filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               : filteredRows
-            ).map((row: userDataTypes) => (
+            ).map((row:userDataTypes) => (
               <TableRow key={row._id}>
                 <TableCell align="center">{row._id}</TableCell>
                 <TableCell align="center">{row.username}</TableCell>

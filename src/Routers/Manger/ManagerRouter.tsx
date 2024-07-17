@@ -12,6 +12,11 @@ import VenderDetails from "../../Section/Manager/vender/Details";
 import Venders from "../../Section/Manager/vender/Vender";
 import EditLocation from "../../Section/Manager/Location/EditLocation";
 import ViewLocation from "../../Section/Manager/Location/ViewLocation";
+import ManagerSettings from "../../Section/Manager/Settings";
+import UserbookingHistory from "../../Section/Manager/UserbookingHistory";
+import UserBookingDetails from "../../Section/Manager/UserbookingHistory/UserBookingDetails";
+import VenderBooking from "../../Section/Manager/UserbookingHistory/VenderBooking";
+import Offer from "../../Section/Manager/Offer";
 
 const ManagerRouter = () => {
   return [
@@ -72,8 +77,28 @@ const ManagerRouter = () => {
           element: <Venders />,
         },
         {
+          path: "settings",
+          element: <ManagerSettings />,
+        },
+        {
           path: "VenderDetails",
           element: <VenderDetails />,
+        },
+        {
+          path: "UserbookingHistory",
+          element: <UserbookingHistory />,
+        },
+        {
+          path: "UserBookingDetails",
+          element: <UserBookingDetails />,
+        },
+        {
+          path: "VenderBooking",
+          element: <VenderBooking />,
+        },
+        {
+          path: "offer",
+          element: <Offer />,
         },
       ],
     },

@@ -100,7 +100,7 @@ export const refreshAccessToken = (refreshToken:string|null|undefined
     });
   };
 
-  export const blockUser = (userId: number): Promise<ApiResponse> => {
+  export const blockUser = (userId: string): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
       try {
         apiCall("post", adminUrls.blockUser, {userId})

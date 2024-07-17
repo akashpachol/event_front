@@ -49,12 +49,12 @@ item
     return (
    
         
-      <div
-        className={cn(
-          " rounded-xl group/bento hover:shadow-2xl transition duration-600 shadow-input  p-4   bg-gray-100 border border-transparent justify-between flex flex-col space-y-4",
-       
-        )}
-      >
+        <div
+          className={cn(
+            " rounded-xl group/bento hover:shadow-2xl transition duration-600 shadow-input  p-4   bg-gray-100 border border-transparent justify-between flex flex-col space-y-4",
+        
+          )}
+        >
            {item?.image && (
         <img
           src={item.image[0]?.url}

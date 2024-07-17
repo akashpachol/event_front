@@ -65,6 +65,7 @@ export const BentoGrid:React.FC<BentoGridProps> = ({
       <div className="font-sans font-bold text-neutral-600  mb-2 mt-2">
             {title}
           </div>
+          
           <div className="font-sans font-normal text-neutral-600 text-xs ">
             {description}
           </div>

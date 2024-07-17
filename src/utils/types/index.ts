@@ -66,7 +66,7 @@ export type signupInputs = {
     message: string;
     token?:string;
     user?:string;
-    data?: object;
+    data?: object| [];
     userId?:string;
     adminId?: string ,
     admin?: string,
@@ -89,8 +89,8 @@ export type signupInputs = {
 
  export type ProfileFormProps = {
     setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
-    userData:object |null,
-    setApi:any,
+    userData:userDataTypes |null,
+    setApi: React.Dispatch<React.SetStateAction<boolean>>;
     api:boolean,
   };
   export type cropFormProps = {
@@ -150,6 +150,11 @@ export type signupInputs = {
     image:string,
     _id:string,
  }
+ export type ApiResponseLocation={
+  status: string;
+  message: string;
+  data?:object|null;
+ }
 
  export type location = {
   _id?: string;
@@ -158,12 +163,24 @@ export type signupInputs = {
   address: string;
   state: string;
   type: string[];
-  price: string;
+  price: number;
   capasity: string;
-  image: string[];
+  image: {url:string}[];
   manager?: string | null | undefined;
   verify?: boolean;
+  discountPrice?:number
 }
+
+export type offer={
+  name:string,
+  discountValue:number,
+_id?:string
+  endDate:string,
+  startDate:string,
+  discountedManager:string | null | undefined,
+  isActive?:boolean
+}
+
  export type eventDataTypes= {
   _id: number |string;
   name: string;
@@ -175,6 +192,7 @@ export type signupInputs = {
 }
 
  export type vender={
+  _id: string;
   name:string,
   description:string,
   address:string,
@@ -182,16 +200,99 @@ export type signupInputs = {
   type:string,
   price:string,
 
-  image:object,
+  image:string[],
   vender?:string |null|undefined,
   verify?: boolean;
  }
 
 
+ export type booking={
+  _id?: string;
+  name:string,
+  event:string,
+  count:string,
+  type: string[],
+  time:string,
+  date:string,
+  service: string[],
+  manager:string,
+  locationData:string,
+ }
+
+ export type serviceBooking={
+  _id?: string;
+  name:string,
+  event:string,
+  count:string,
+  vender:string
+  date:string,
+  manager:string|undefined|null,
+  venderData:string|undefined,
+  status:string,
+  bookingData?:string,
+ }
+ export type bookingData={
+  _id?: string|undefined;
+  name:string,
+  event:string,
+  count:string,
+  type: string[],
+  time:string,
+  date:string,
+  total:number,
+  phone:string,
+  service: string[],
+  manager:userDataTypes,
+  user:userDataTypes,
+  locationData:location,
+  status?:string
+ }
 
  export type eventState={
   loading: boolean,
 
 data:eventDataTypes[]|null
 
+}
+
+
+export type ApiResponseOfBooking={
+  status: string;
+  message: string;
+
+  data?: object| bookingData[];
+ 
+  
+}
+
+export type ApiResponseOfWallet={
+  status: string;
+  message: string;
+
+  data?: wallet
+ 
+  
+}
+
+
+export type wallet={
+  _id?:string
+  user: string;
+  walletBalance: number;
+  transactions:transaction[]
+
+
+ 
+  
+}
+
+export type transaction={
+  _id?:string
+  date: string;
+  amount: number;
+  type:string
+
+ 
+ 
+  
 }

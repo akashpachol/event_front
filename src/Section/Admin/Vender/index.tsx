@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import {   getAllVenderDeatails } from '../../../service/api/admin/apiMethod';
+import {   blockUser, getAllVenderDeatails } from '../../../service/api/admin/apiMethod';
 import { toast } from 'react-toastify';
 
 import Swal from 'sweetalert2';
 import { userDataTypes } from '../../../utils/types';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { getAllVenderwithId } from '../../../service/api/vender/apiMethod';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../utils/redux/slice/Auth/VenderAuthSlice';
 
 
 
@@ -15,11 +17,12 @@ const rowsPerPageOptions = [5, 10, 25];
 
 const Venders: React.FC = () => {
   const [page, setPage] = useState(0);
-  // const [api, setApi] = useState(false);
+  const [api, setApi] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const [venderData, setVenderData] = useState<userDataTypes[]>([]);
   const [filteredRows, setFilteredRows] = useState<userDataTypes[]>([]);
+  const dispatch = useDispatch();
 
   const color = grey[200];
   const navigate: NavigateFunction = useNavigate();
@@ -27,7 +30,7 @@ const Venders: React.FC = () => {
 
   useEffect(() => {
     getDetails();
-  }, []);
+  }, [api]);
 
   const getDetails = async () => {
     try {
@@ -73,25 +76,32 @@ const Venders: React.FC = () => {
     setPage(0);
   };
 
-  const handleClick = (id: string) => {
-    console.log(id, "jdhshdjh");
-    Swal.fire({
+  const handleClick = async (id: string) => {
+
+  
+    const result = await Swal.fire({
       title: "Are you sure to block vender",
-      text: "You won't be able to revert this!",
+            text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, block it!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-   
-   console.log(result);
-   
-      }
     });
+  
+    if (result.isConfirmed) {
+      try {
+        await blockUser(id);
 
-   
+        dispatch(logout());
+        console.log('hai');
+        
+        setApi((prev) => !prev);
+      } catch (error) {
+        const errorMessage = (error as Error).message;
+        toast.error(errorMessage);
+      }
+    }
   };
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, filteredRows.length - page * rowsPerPage);

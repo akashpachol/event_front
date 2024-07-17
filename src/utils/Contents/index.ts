@@ -147,17 +147,35 @@ export type ProfileType = {
 export const profileData:ProfileType[]=[
     {
     name:'My Profile',
-   path:''
+   path:'/settings'
+},
+{
+    name:'Booking',
+   path:'/bookingHistory'
 },
 // {
-//     name:'Change Password',
+//     name:'Logout',
 //    path:''
 // },
-{
-    name:'Logout',
-   path:''
-},
 
 
 
 ]
+
+
+export const profileDatas:ProfileType[]=[
+    {
+    name:'My Profile',
+   path:'/settings'
+},
+
+// {
+//     name:'Logout',
+//    path:''
+// },
+
+
+
+]
+
+

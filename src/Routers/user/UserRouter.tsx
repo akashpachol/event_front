@@ -9,6 +9,11 @@ import Navbar from "../../Section/user/Partials/Navbar";
 import Details from "../../Section/user/Location/Details";
 import Location from "../../Section/user/Location/Location";
 import Forgot from "../../Section/user/auth/forgot/Forgot";
+import Booking from "../../Section/user/Booking";
+import Payment from "../../Section/user/Booking/Payment";
+import BookingHistory from "../../Section/user/Booking/BookingHistory";
+import BookingDeatails from "../../Section/user/Booking/BookingDeatails";
+import Wallet from "../../Section/user/Wallet";
 
 const UserRouters = () => {
   return [
@@ -68,7 +73,32 @@ const UserRouters = () => {
           element:(   <UserAuth><Details /></UserAuth>),  
         
         },
-     
+        {
+          path: "booking",
+          element:(   <UserAuth><Booking /></UserAuth>),  
+        
+        },
+        {
+          path: "payment",
+          element:(   <UserAuth><Payment /></UserAuth>),  
+        
+        },
+
+        {
+          path: "bookingHistory",
+          element:(   <UserAuth><BookingHistory /></UserAuth>),  
+        
+        },
+        {
+          path: "bookingDetails",
+          element:(   <UserAuth><BookingDeatails /></UserAuth>),  
+        
+        },
+        {
+          path: "wallet",
+          element:(   <UserAuth><Wallet /></UserAuth>),  
+        
+        },
       ],
     },
   ];

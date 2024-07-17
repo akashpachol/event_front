@@ -33,17 +33,13 @@ const Venders:React.FC = () => {
   return (
     <div>
  
-            <div className="px-24 bg-gray-100 h-screen  py-12">
+            <div className="px-5 bg-gray-100 h-screen  py-12">
 
 
             <BentoGrid className=" ">
         {vender?.map((item, i) => (
           <BentoGridItem
-            key={i}
-            title={item.name}
-            description={item.description}
-            header={item.image}
-            className={""}
+          item={item}
           />
         ))}
       </BentoGrid>

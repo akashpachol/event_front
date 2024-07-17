@@ -12,7 +12,7 @@ import { NavLink } from 'react-router-dom';
 const Layout:React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.manager);
-  console.log(user,'dashboard');
+
 
   const navigate: NavigateFunction = useNavigate();
     const [isMaxSidebar, setIsMaxSidebar] = useState(true);
@@ -117,7 +117,12 @@ const Layout:React.FC = () => {
                       >
                         
                         <button
-                        onClick={()=>navigate('/manager/settings')}
+                        onClick={()=>{
+                          navigate('/manager/settings')
+                          setDropdownOpen(!dropdownOpen)
+
+                        
+                        }}
                       
                           className="block px-4 py-2 text-sm text-gray-700"
                           role="menuitem"
@@ -199,6 +204,17 @@ const Layout:React.FC = () => {
         <div className="hover:ml-4  w-full text-white mt-1 hover:text-black bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br  p-2 pl-8 rounded-lg transform ease-in-out duration-500 flex flex-row items-center space-x-3  border" >
           <RiHome2Line className="w-4 h-4" />
           <div className="text-white hover:text-black">Venders</div>
+        </div></NavLink>
+        <NavLink  to={'/manager/UserbookingHistory'} >
+        <div className="hover:ml-4  w-full text-white mt-1 hover:text-black bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br  p-2 pl-8 rounded-lg transform ease-in-out duration-500 flex flex-row items-center space-x-3  border" >
+          <RiHome2Line className="w-4 h-4" />
+          <div className="text-white hover:text-black">User booking History</div>
+        </div></NavLink>
+
+        <NavLink  to={'/manager/offer'} >
+        <div className="hover:ml-4  w-full text-white mt-1 hover:text-black bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br  p-2 pl-8 rounded-lg transform ease-in-out duration-500 flex flex-row items-center space-x-3  border" >
+          <RiHome2Line className="w-4 h-4" />
+          <div className="text-white hover:text-black">Offer</div>
         </div></NavLink>
  
     

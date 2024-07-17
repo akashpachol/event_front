@@ -1,14 +1,17 @@
 "use client";
-import React, { useState } from "react";
+import  { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "../../../animation/cn";
-// import Image from "next/image";
+import ImageIcon from "../../../assets/icons/istockphoto-1222357475-612x612.jpg";
 type Card = {
   id: number;
-  content: JSX.Element | React.ReactNode | string;
+
   className: string;
   thumbnail: string;
 };
+
+
+
  
 export const LayoutGrid = ({ cards }: { cards: Card[] }) => {
   const [selected, setSelected] = useState<Card | null>(null);
@@ -25,8 +28,8 @@ export const LayoutGrid = ({ cards }: { cards: Card[] }) => {
   };
  
   return (
-    <div className="w-full h-full p-10 grid grid-cols-1 md:grid-cols-3  max-w-7xl mx-auto gap-4 relative">
-      {cards.map((card, i) => (
+    <div className="w-full h-full  grid grid-cols-1 md:grid-cols-4  max-w-7xl mx-auto gap-4 relative">
+      {cards.slice(0,4).map((card, i) => (
         <div key={i} className={cn(card.className, "")}>
           <motion.div
             onClick={() => handleClick(card)}
@@ -41,7 +44,7 @@ export const LayoutGrid = ({ cards }: { cards: Card[] }) => {
             )}
             layout
           >
-            {selected?.id === card.id && <SelectedCard selected={selected} />}
+            {selected?.id === card.id && <SelectedCard  />}
             <BlurImage card={card} />
           </motion.div>
         </div>
@@ -54,6 +57,16 @@ export const LayoutGrid = ({ cards }: { cards: Card[] }) => {
         )}
         animate={{ opacity: selected?.id ? 0.3 : 0 }}
       />
+      {cards.length-4>0?(   <div className="col-span-1  flex justify-center ">
+   <div className="  my-auto flex-col justify-center">
+   <img src={ImageIcon}  className="ms-6 w-24" /><p className="ms-8">{cards.length-4} Photos</p>
+
+   </div>
+        
+          </div>):''}
+   
+
+    
     </div>
   );
 };
@@ -75,7 +88,7 @@ const BlurImage = ({ card }: { card: Card }) => {
   );
 };
  
-const SelectedCard = ({ selected }: { selected: Card | null }) => {
+const SelectedCard = () => {
   return (
     <div className="bg-transparent h-full w-full flex flex-col justify-end rounded-lg shadow-2xl relative z-[60]">
       <motion.div
@@ -87,23 +100,10 @@ const SelectedCard = ({ selected }: { selected: Card | null }) => {
         }}
         className="absolute inset-0 h-full w-full bg-black opacity-60 z-10"
       />
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: 100,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          duration: 0.3,
-          ease: "easeInOut",
-        }}
-        className="relative px-8 pb-4 z-[70]"
-      >
-        {selected?.content}
-      </motion.div>
+  
     </div>
   );
 };
+
+
+

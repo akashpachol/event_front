@@ -116,7 +116,10 @@ const AddVenders: React.FC = () => {
       });
     }
   };
-
+  const handleCancel = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    formik.resetForm();
+  };
   return (
     <section className="content-main p-4">
       <form onSubmit={formik.handleSubmit}>
@@ -252,7 +255,11 @@ const AddVenders: React.FC = () => {
                 )}
               </div>
               <div className='mt-5'>
-                <button className="bg-white border border-gray-300 rounded font-sm mr-5 text-gray-700 px-4 py-2 hover:bg-gray-100">
+              <button
+                  type="button"
+                  className="bg-white border border-gray-300 rounded font-sm mr-5 text-gray-700 px-4 py-2 hover:bg-gray-100"
+                  onClick={handleCancel}
+                >
                   Cancel
                 </button>
                 <button type="submit" className="manager_button">

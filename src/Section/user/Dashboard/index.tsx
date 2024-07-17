@@ -17,7 +17,7 @@ const Dashboard: React.FC = () => {
   return (
     <div>
       <Navbar />
-      {/* banner section */}
+    
       <section
         className="bg-cover h-lvh"
         style={{ backgroundImage: `url(${banner_image})` }}

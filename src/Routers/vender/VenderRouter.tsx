@@ -9,6 +9,7 @@ import VenderAuth from "./VenderAth";
 import Layout from "../../Section/vender/Layout";
 import Venders from "../../Section/vender/Venders/Venders";
 import AddVenders from "../../Section/vender/Venders/AddVenders";
+import VenderSettings from "../../Section/vender/Settings";
 
 const VenderRouter = () => {
 
@@ -69,6 +70,10 @@ const VenderRouter = () => {
             <Venders />
       
         ),
+      },
+      {
+        path: "settings",
+        element: <VenderSettings />,
       },
       {
         path: "addvenders",

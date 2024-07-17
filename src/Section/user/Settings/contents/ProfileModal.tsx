@@ -1,10 +1,24 @@
 import React from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { ProfileFormProps, signupInputs } from "../../../../utils/types";
+import { ProfileFormProps } from "../../../../utils/types";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../utils/redux/app/store";
 import { toast } from "react-toastify";
 import { editProfile } from "../../../../service/api/user/apiMethod";
+import { useFormik } from "formik";
+import * as Yup from 'yup';
+
+const phoneRegExp = /^[0-9]{10}$/;
+const validationSchema = Yup.object().shape({
+  username: Yup.string()
+    .required("Username is required")
+    .min(3, "Username must be at least 3 characters long"),
+  email: Yup.string()
+    .email("Invalid email address")
+    .required("Email is required"),
+  phone: Yup.string()
+    .matches(phoneRegExp, "Phone number is not valid")
+    .required("Phone number is required"),
+});
 
 const ProfileModal: React.FC<ProfileFormProps> = ({
   setShowModal,
@@ -12,117 +26,91 @@ const ProfileModal: React.FC<ProfileFormProps> = ({
   setApi,
   api,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<signupInputs>();
-  // const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.user);
-  console.log(user);
 
-  const onSubmit: SubmitHandler<signupInputs> = (payloads) => {
-    console.log(payloads, "Form Data with Cropped Image");
+  const formik = useFormik({
+    initialValues: {
+      username: userData?.username || "",
+      email: userData?.email || "",
+      phone: userData?.phone || "",
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      console.log(values, "Submitted values");
+      editProfile(user.userId, values)
+        .then((response: object) => {
+          console.log(response, "Response from editProfile");
+          setApi(!api);
+        })
+        .catch((error) => {
+          toast.error(error?.message);
+        });
 
-    editProfile(user.userId, payloads)
-      .then((response: object) => {
-        console.log(response, "kjhfdkfdkj");
-        setApi(!api);
-      })
-      .catch((error) => {
-        toast.error(error?.message);
-      });
+      setShowModal(false);
+      formik.resetForm(); 
+    },
+  });
 
-    setShowModal(false);
-  };
   return (
     <div>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
         <div className="relative w-lg my-6 mx-auto max-w-3xl">
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
-              <h3 className="text-3xl font-semibold">Modal Title</h3>
+              <h3 className="text-3xl font-semibold">Edit Profile</h3>
               <button
-                className="p-1 ml-auto  float-right text-3xl "
+                className="p-1 ml-auto float-right text-3xl"
                 onClick={() => setShowModal(false)}
               >
-                <span className=" text-black h-6 w-6 text-2xl me-6">x</span>
+                <span className="text-black h-6 w-6 text-2xl">x</span>
               </button>
             </div>
-
             <div className="p-6 mx-auto">
               <form
-                className="w-full "
-                onSubmit={handleSubmit(onSubmit)}
+                className="w-full"
+                onSubmit={formik.handleSubmit}
                 noValidate
               >
                 <div className="flex w-full">
                   <div className="">
                     <div className="mb-4">
-                      <label className="label" htmlFor="username">
-                        Username
-                      </label>
+                      <label className="label" htmlFor="username">Username</label>
                       <input
                         id="username"
                         type="text"
-                        defaultValue={userData?.username}
-                        placeholder="Enter your name"
                         className="input"
-                        {...register("username", {
-                          required: {
-                            value: true,
-                            message: "Username is required",
-                          },
-                        })}
+                        placeholder="Enter the username"
+                        {...formik.getFieldProps('username')}
                       />
-                      <p className="text-red-600">{errors.username?.message}</p>
+                      {formik.touched.username && formik.errors.username ? (
+                        <div className="text-red-600">{formik.errors.username}</div>
+                      ) : null}
                     </div>
                     <div className="mb-4">
-                      <label className="label" htmlFor="email">
-                        Email
-                      </label>
+                      <label className="label" htmlFor="email">Email</label>
                       <input
                         id="email"
                         type="email"
-                        value={userData?.email}
-                        placeholder="Enter your email"
                         className="input"
-                        {...register("email", {
-                          required: {
-                            value: true,
-                            message: "Email is required",
-                          },
-                          pattern: {
-                            value:
-                              /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                            message: "Invalid email address",
-                          },
-                        })}
+                        placeholder="Enter the email"
+                        {...formik.getFieldProps('email')}
                       />
-                      <p className="text-red-600">{errors.email?.message}</p>
+                      {formik.touched.email && formik.errors.email ? (
+                        <div className="text-red-600">{formik.errors.email}</div>
+                      ) : null}
                     </div>
                     <div className="mb-4">
-                      <label className="label" htmlFor="phone">
-                        Phone Number
-                      </label>
+                      <label className="label" htmlFor="phone">Phone Number</label>
                       <input
                         id="phone"
                         type="text"
-                        value={userData?.phone}
-                        placeholder="Enter your phone"
                         className="input"
-                        {...register("phone", {
-                          required: {
-                            value: true,
-                            message: "Phone number is required",
-                          },
-                          pattern: {
-                            value: /^\d{10}$/,
-                            message: "Invalid phone number",
-                          },
-                        })}
+                        placeholder="Enter your phone"
+                        {...formik.getFieldProps('phone')}
                       />
-                      <p className="text-red-600">{errors.mobile?.message}</p>
+                      {formik.touched.phone && formik.errors.phone ? (
+                        <div className="text-red-600">{formik.errors.phone}</div>
+                      ) : null}
                     </div>
                     <div className="flex items-center justify-end mt-12 p-6 border-t border-solid border-blueGray-200 rounded-b">
                       <button

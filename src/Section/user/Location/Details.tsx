@@ -1,95 +1,217 @@
-"use client";
+import { NavigateFunction, useLocation, useNavigate } from "react-router-dom";
 import { LayoutGrid } from "./LayoutGrid";
+import { useCallback, useEffect, useState } from "react";
+import {
+  ApiResponseLocation,
+  eventDataTypes,
+  location,
+} from "../../../utils/types";
+import { getlocationDetails } from "../../../service/api/manager/apiMethod";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../utils/redux/app/store";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import { checkAvailability } from "../../../service/api/user/apiMethod";
 
-const Details=()=> {
-  return (
-    <div className="h-screen py-20 w-full">
-      <LayoutGrid cards={cards} />
-    </div>
-  );
-}
+type ValuePiece = Date | null;
+type Value = ValuePiece | [ValuePiece, ValuePiece];
 
-const SkeletonOne = () => {
+const Details = () => {
+  const [value, setValue] = useState<Value>(new Date());
+  const [timeData, setTimeData] = useState<string[] | null>(null);
+  const [locationData, setLocationData] = useState<location | null>(null);
+  const [data, setData] = useState<eventDataTypes[] | null>(null);
+  const event = useSelector((state: RootState) => state.event);
+  const navigate: NavigateFunction = useNavigate();
+  const location = useLocation();
+  const receivedData = location.state;
+  const getDetails = useCallback(() => {
+    getlocationDetails(receivedData)
+      .then((response: ApiResponseLocation) => {
+        if (response.data) {
+          setLocationData(response.data as location);
+        } else {
+          toast.error("No location data found");
+        }
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      });
+  }, [receivedData]);
+
+  useEffect(() => {
+    getDetails();
+  }, [getDetails]);
+
+  const [state, setState] = useState<
+    { id: number; thumbnail: string; className: string }[]
+  >([]);
+
+  useEffect(() => {
+    if (locationData?.image) {
+      const cards = locationData.image.slice(0, 4).map((value, index) => ({
+        id: index + 1,
+        thumbnail: value.url,
+        className:
+          index == 0 ? "md:row-span-2 col-span-2" : "row-span-1 col-span-1",
+      }));
+      setState(cards);
+      const filteredEvents = event.data?.filter((event_data) =>
+        locationData.type.some((type) => type === event_data._id)
+      );
+      setData(filteredEvents ?? null);
+    }
+  }, [locationData, event.data]);
+
+  const handleChange = (value: ValuePiece) => {
+    setValue(value);
+    if (!locationData || !locationData._id) {
+      return;
+    }
+
+    checkAvailability(value, locationData._id)
+      .then((response) => {
+        if (response.status === "success") {
+          if (response.data) {
+            setTimeData(response.data.map((item) => item.time));
+          }
+        } else {
+          toast.error(response.message);
+        }
+      })
+      .catch((error) => {
+        toast.error(error?.message);
+      });
+  };
+  const allTimeData: string[] = ["full Day", "morning", "evening"];
+
   return (
-    <div>
-      <p className="font-bold text-4xl text-white">House in the woods</p>
-      <p className="font-normal text-base text-white"></p>
-      <p className="font-normal text-base my-4 max-w-lg text-neutral-200">
-        A serene and tranquil retreat, this house in the woods offers a peaceful
-        escape from the hustle and bustle of city life.
-      </p>
+    <div className="  py-20  w-full bg-white">
+      <div className="h-96">
+        <LayoutGrid cards={state} />
+      </div>
+      <div className="flex ">
+        <div className="card mt-16 ms-32 me-10 px-10 border flex w-3/5 ">
+          <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <tbody>
+              <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  Name
+                </th>
+                <td className="px-6 py-4">{locationData?.name}</td>
+              </tr>
+              <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  Address
+                </th>
+
+                <td className="px-6 py-4 break-words">
+                  {locationData?.address},{locationData?.state}
+                </td>
+              </tr>
+              <tr className="bg-white border-b dark:bg-gray-800">
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  description
+                </th>
+                <td className="px-6 py-4">{locationData?.description}</td>
+              </tr>
+              <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  price
+                </th>
+
+                <td className="px-6 py-4 text-lg">
+                  {" "}
+                  {locationData?.discountPrice === locationData?.price ? (
+                    <span>{locationData?.price}</span>
+                  ) : locationData?.discountPrice ? (
+                    <p className="font-medium">
+                      <span>{locationData.discountPrice}</span>,{" "}
+                      <span className="line-through">
+                        {locationData?.price}
+                      </span>
+                    </p>
+                  ) : (
+                    <span>{locationData?.price}</span>
+                  )}
+                </td>
+              </tr>
+              <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  capasity
+                </th>
+
+                <td className="px-6 py-4">{locationData?.capasity}</td>
+              </tr>
+
+              <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  Events
+                </th>
+                <td className="px-6 py-4">
+                  {data?.map((value, index) => (
+                    <span key={index}>
+                      {value.name}
+                      {index < data.length - 1 ? ", " : ""}
+                    </span>
+                  ))}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div className=" mt-5 w-2/5 mx-auto  me-4">
+          <h3 className="text-2xl font-bold text-center text-gray-800 mb-4">
+            Check Availability
+          </h3>
+          <div className="flex  justify-center">
+            <Calendar onChange={handleChange} value={value} minDate={new Date()} />
+          </div>
+          <div>
+            <ul className="flex px-20">
+              {allTimeData.map((time) =>
+                !timeData?.includes(time) ? (
+                  <li className="mx-4 my-4" key={time}>
+                    {time}
+                  </li>
+                ) : null
+              )}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex  justify-center">
+        <button
+          className="authentication_button w-1/2 mt-5"
+          onClick={() => {
+            navigate("/booking", { state: { type: locationData } });
+          }}
+        >
+          book Location
+        </button>
+      </div>
     </div>
   );
 };
-
-const SkeletonTwo = () => {
-  return (
-    <div>
-      <p className="font-bold text-4xl text-white">House above the clouds</p>
-      <p className="font-normal text-base text-white"></p>
-      <p className="font-normal text-base my-4 max-w-lg text-neutral-200">
-        Perched high above the world, this house offers breathtaking views and a
-        unique living experience. It&apos;s a place where the sky meets home,
-        and tranquility is a way of life.
-      </p>
-    </div>
-  );
-};
-const SkeletonThree = () => {
-  return (
-    <div>
-      <p className="font-bold text-4xl text-white">Greens all over</p>
-      <p className="font-normal text-base text-white"></p>
-      <p className="font-normal text-base my-4 max-w-lg text-neutral-200">
-        A house surrounded by greenery and nature&apos;s beauty. It&apos;s the
-        perfect place to relax, unwind, and enjoy life.
-      </p>
-    </div>
-  );
-};
-const SkeletonFour = () => {
-  return (
-    <div>
-      <p className="font-bold text-4xl text-white">Rivers are serene</p>
-      <p className="font-normal text-base text-white"></p>
-      <p className="font-normal text-base my-4 max-w-lg text-neutral-200">
-        A house by the river is a place of peace and tranquility. It&apos;s the
-        perfect place to relax, unwind, and enjoy life.
-      </p>
-    </div>
-  );
-};
-
-const cards = [
-  {
-    id: 1,
-    content: <SkeletonOne />,
-    className: "md:col-span-2",
-    thumbnail:
-      "https://images.unsplash.com/photo-1476231682828-37e571bc172f?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: 2,
-    content: <SkeletonTwo />,
-    className: "col-span-1",
-    thumbnail:
-      "https://images.unsplash.com/photo-1464457312035-3d7d0e0c058e?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: 3,
-    content: <SkeletonThree />,
-    className: "col-span-1",
-    thumbnail:
-      "https://images.unsplash.com/photo-1588880331179-bc9b93a8cb5e?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: 4,
-    content: <SkeletonFour />,
-    className: "md:col-span-2",
-    thumbnail:
-      "https://images.unsplash.com/photo-1475070929565-c985b496cb9f?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-];
-
 
 export default Details;
