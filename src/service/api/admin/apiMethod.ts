@@ -155,7 +155,7 @@ export const refreshAccessToken = (refreshToken:string|null|undefined
   };
 
   
-  export const blockEvent = (eventId: number): Promise<ApiResponse> => {
+  export const blockEvent = (eventId: number|string): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
       try {
         apiCall("post", adminUrls.blockEvent, {eventId})

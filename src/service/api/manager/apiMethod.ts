@@ -1,4 +1,4 @@
-import { ApiResponse, location, offer, serviceBooking, signupInputs  } from "../../../utils/types";
+import { ApiResponse, ApiResponseOfChat, ApiResponseOfMessage, ApiResponseOfWallet, ApiSearchResponse, location, offer, serviceBooking, signupInputs  } from "../../../utils/types";
 import { apiCall } from "./apiCall";
 import { managerUrls } from "../endpoint";
 
@@ -412,3 +412,202 @@ console.log(data);
           }
         });
       };
+
+
+      
+
+export const searchData = (
+  data: string | undefined,role:string,userId:string
+): Promise<ApiSearchResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${managerUrls.searchData}?role=${role}&search=${data}&id=${userId}`;
+
+      apiCall("get", url, null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+export const postChat = (
+  userId: string ,receiverId:string|undefined
+): Promise<ApiResponseOfChat> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${managerUrls.createChat}`;
+
+      apiCall("post", url, {userId,receiverId})
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+export const groupChat = (
+  data:{name:string,users:[],userId:string}
+): Promise<ApiResponseOfChat> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${managerUrls.groupChat}`;
+
+      apiCall("post", url, data)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+
+
+export const getManger = (
+  role: string ,userId:string
+): Promise<ApiResponseOfChat> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${managerUrls.getManger}?role=${role}&id=${userId}`;
+
+      apiCall("get", url,null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+export const getAllChats = (
+  userId:string
+): Promise<ApiResponseOfChat> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${managerUrls.allChats}/${userId}`;
+
+      apiCall("get", url,null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+export const postMessage = (
+  userId: string ,chatId:string|undefined,content:string
+): Promise<ApiResponseOfMessage> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${managerUrls.message}`;
+
+      apiCall("post", url, {userId,chatId,content})
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+export const getMessage = (
+  chatId: string|undefined ,userId:string
+): Promise<ApiResponseOfMessage> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${managerUrls.message}?chatId=${chatId} &userId=${userId}`;
+
+      apiCall("get", url,null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+export const getUnreadMessages = (
+  chatId: string|undefined ,userId:string
+): Promise<ApiResponseOfChat> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${managerUrls.getUnreadMessagesFromChat}`;
+
+      apiCall("post", url,{chatId,userId})
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+export const getWallet = (
+  userId: string | null | undefined
+): Promise<ApiResponseOfWallet> => {
+  return new Promise((resolve, reject) => {
+    console.log(userId,'userId');
+    
+    try {
+      const url = `${managerUrls.getWallet}/${userId}`;
+
+      apiCall("get", url, null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};

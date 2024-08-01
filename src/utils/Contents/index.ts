@@ -166,13 +166,13 @@ export const profileData:ProfileType[]=[
 export const profileDatas:ProfileType[]=[
     {
     name:'My Profile',
-   path:'/settings'
+   path:'/manager/settings'
 },
 
-// {
-//     name:'Logout',
-//    path:''
-// },
+{
+    name:'wallet',
+   path:'/manager/wallet'
+},
 
 
 

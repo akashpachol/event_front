@@ -14,15 +14,12 @@ const LocationCard: React.FC<locationType> = ({
         className="mb-4 h-48 w-full transition-transform duration-700 ease-in-out transform hover:scale-105"
         alt={name}
       />
-      <div className="">
-
-      </div>
+      <div className=""></div>
       <div>
-      <span className="text-base font-medium mb-2">{name}</span>
-      <p className="font-sm">{price}</p>
-      <span className="font-sm">{location}</span>
+        <span className="text-base font-medium mb-2">{name}</span>
+        <p className="font-sm">{price}</p>
+        <span className="font-sm">{location}</span>
       </div>
-
     </div>
   );
 };

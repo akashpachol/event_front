@@ -1,19 +1,48 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 
 import VenderCard from "./VenderCard";
+import { getUserBookingDetails } from "../../../service/api/manager/apiMethod";
+import { toast } from "react-toastify";
+import { bookingData } from "../../../utils/types";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../utils/redux/app/store";
 
 const UserBookingDetails: React.FC = () => {
-  const location = useLocation();
-  const receivedData = location.state;
+
+  const [receivedData,setReceivedData]=useState<bookingData|null>(null)
 
 
-console.log(receivedData,"receivedData");
+  const book = useSelector((state: RootState) => state.book);
+
+
+useEffect(() => {
+  getDetails()
+}, []);
+
+
+const getDetails=async()=>{
+  try {
+
+    const response = await getUserBookingDetails(book.data);
+
+    if(response.data){
+      setReceivedData(response.data)
+
+    }
+
+  
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      toast.error(error.message);
+    } else {
+      toast.error("An unknown error occurred");
+    }
+  }
+}
 
 
 
-
-
+console.log(receivedData,'hjhgjh');
 
 
   return (
@@ -95,9 +124,9 @@ console.log(receivedData,"receivedData");
             className="grid grid-cols-2 gap-4 transition-transform duration-500 ease-in-out"
          
           >
-            {receivedData.service.map((value) => (
+            {receivedData?.service.map((value:any) => (
        
-                <VenderCard vender={value.data} status={value.status} bookingId={receivedData._id} />
+                <VenderCard vender={value.data}  receivedData={receivedData} status={value.status} />
            
             ))}
           </div>

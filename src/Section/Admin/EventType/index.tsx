@@ -1,16 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, Typography } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TablePagination,
+  Typography,
+} from "@mui/material";
+import { grey } from "@mui/material/colors";
 
-
-import {  blockEvent, getAllEventDeatails } from '../../../service/api/admin/apiMethod';
-import { toast } from 'react-toastify';
-import Modal from './Modal';
-import Swal from 'sweetalert2';
-import { eventDataTypes } from '../../../utils/types';
-
-
-
+import {
+  blockEvent,
+  getAllEventDeatails,
+} from "../../../service/api/admin/apiMethod";
+import { toast } from "react-toastify";
+import Modal from "./Modal";
+import Swal from "sweetalert2";
+import { eventDataTypes } from "../../../utils/types";
+import { eventAdd } from "../../../utils/redux/slice/EventSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../utils/redux/app/store";
 
 const rowsPerPageOptions = [5, 10, 25];
 
@@ -18,23 +30,25 @@ const EventType: React.FC = () => {
   const [page, setPage] = useState(0);
   const [api, setApi] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [eventData, setEventData] = useState<eventDataTypes[]>([]);
   const [filteredRows, setFilteredRows] = useState<eventDataTypes[]>([]);
   const [showModal, setShowModal] = useState(false);
   const color = grey[200];
-
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getDetails();
   }, [api]);
 
   const getDetails = async () => {
-  
     try {
       const response = await getAllEventDeatails();
       if (response && Array.isArray(response.data)) {
         setEventData(response.data);
+        console.log(response.data,"response.data");
+        
+        dispatch(eventAdd({ data: response.data }));
 
         setFilteredRows(response.data);
       } else {
@@ -42,8 +56,6 @@ const EventType: React.FC = () => {
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-       
-        
         toast.error(error.message);
       } else {
         toast.error("An unknown error occurred");
@@ -54,8 +66,10 @@ const EventType: React.FC = () => {
   useEffect(() => {
     const debounce = setTimeout(() => {
       const filtered = eventData.filter((userValue) =>
-        Object.values(userValue).some((value) =>
-          value && value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+        Object.values(userValue).some(
+          (value) =>
+            value &&
+            value.toString().toLowerCase().includes(searchQuery.toLowerCase())
         )
       );
       setFilteredRows(filtered);
@@ -72,13 +86,14 @@ const EventType: React.FC = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const handleClick = (id: number) => {
-    console.log(id, "jdhshdjh");
+  const handleClick = (id: number | string) => {
     Swal.fire({
       title: "Are you sure to block event?",
       text: "You won't be able to revert this!",
@@ -86,10 +101,9 @@ const EventType: React.FC = () => {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
+      confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-    
         blockEvent(id)
           .then((response) => {
             console.log(response);
@@ -100,65 +114,137 @@ const EventType: React.FC = () => {
           });
       }
     });
-
-   
   };
 
-  const emptyRows = rowsPerPage - Math.min(rowsPerPage, filteredRows.length - page * rowsPerPage);
+  const emptyRows =
+    rowsPerPage -
+    Math.min(rowsPerPage, filteredRows.length - page * rowsPerPage);
+
+
+    const event = useSelector((state: RootState) => state.event);
+    console.log(event,'hkgjkh')
 
   return (
-    <div className='mx-5'>
-      <div className='flex justify-between'>
-      <input
-        placeholder="Search"
-      className='border-2 my-6 p-2'
-        value={searchQuery}
-        onChange={handleSearchChange}
-       
-      />
-      <button className='text-white  bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 my-6'  onClick={() => setShowModal(true)}>Add Event</button>
-      {
-        showModal &&(<Modal setShowModal={setShowModal} setApi={setApi} api={api} />)
-      }
+    <div className="mx-5">
+      <div className="flex justify-between">
+        <input
+          placeholder="Search"
+          className="border-2 my-6 p-2"
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
+        <button
+          className="text-white  bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-purple-300 dark:focus:ring-purple-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 my-6"
+          onClick={() => setShowModal(true)}
+        >
+          Add Event
+        </button>
+        {showModal && (
+          <Modal setShowModal={setShowModal} setApi={setApi} api={api} />
+        )}
       </div>
- 
+
       <TableContainer component={Paper}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell align="center" sx={{ maxWidth: '50px', fontWeight: 'bold', backgroundColor: color, color: 'black' }}>ID</TableCell>
-              <TableCell align="center" sx={{ maxWidth: '150px', fontWeight: 'bold', backgroundColor: color, color: 'black' }}>name</TableCell>
-              <TableCell align="center" sx={{ maxWidth: '150px', fontWeight: 'bold', backgroundColor: color, color: 'black' }}>description</TableCell>
-              <TableCell align="center" sx={{ maxWidth: '50px', fontWeight: 'bold', backgroundColor: color, color: 'black' }}>Active</TableCell>
-              <TableCell align="center" sx={{ maxWidth: '150px', fontWeight: 'bold', backgroundColor: color, color: 'black' }}>Actions</TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  maxWidth: "50px",
+                  fontWeight: "bold",
+                  backgroundColor: color,
+                  color: "black",
+                }}
+              >
+                ID
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  maxWidth: "150px",
+                  fontWeight: "bold",
+                  backgroundColor: color,
+                  color: "black",
+                }}
+              >
+                name
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  maxWidth: "150px",
+                  fontWeight: "bold",
+                  backgroundColor: color,
+                  color: "black",
+                }}
+              >
+                description
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  maxWidth: "50px",
+                  fontWeight: "bold",
+                  backgroundColor: color,
+                  color: "black",
+                }}
+              >
+                Active
+              </TableCell>
+              <TableCell
+                align="center"
+                sx={{
+                  maxWidth: "150px",
+                  fontWeight: "bold",
+                  backgroundColor: color,
+                  color: "black",
+                }}
+              >
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {(rowsPerPage > 0
-              ? filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              ? filteredRows.slice(
+                  page * rowsPerPage,
+                  page * rowsPerPage + rowsPerPage
+                )
               : filteredRows
-            ).map((row: eventDataTypes,index) => (
-              <TableRow >
-                <TableCell align="center">{index+1}</TableCell>
+            ).map((row: eventDataTypes, index) => (
+              <TableRow>
+                <TableCell align="center">{index + 1}</TableCell>
                 <TableCell align="center">
-
-                <div className="flex items-center gap-4">
-    <img className="w-10 h-10 rounded-full" src={row.image?row.image:''} alt=""/>
-    <div className="font-medium dark:text-white">
-        <div>{row.name}</div>
-    </div>
-</div>
+                  <div className="flex items-center gap-4">
+                    <img
+                      className="w-10 h-10 rounded-full"
+                      src={row.image ? row.image : ""}
+                      alt=""
+                    />
+                    <div className="font-medium dark:text-white">
+                      <div>{row.name}</div>
+                    </div>
+                  </div>
                 </TableCell>
                 <TableCell align="center">{row.description}</TableCell>
-                <TableCell align="center">{row.isBlocked?' active':"blocked"}</TableCell>
                 <TableCell align="center">
-                {!row.isBlocked ? (
-                 <button className='focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-4 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 ' onClick={() => handleClick(row._id)}>
-                      block  
+                  {row.isBlocked ? " active" : "blocked"}
+                </TableCell>
+                <TableCell align="center">
+                  {!row.isBlocked ? (
+                    <button
+                      className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-4 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 "
+                      onClick={() => handleClick(row._id)}
+                    >
+                      block
                     </button>
                   ) : (
-                    <button className='focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 me-4 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900' onClick={() => handleClick(row._id)}>
-                     unblock
+                    <button
+                      className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 me-4 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+                      onClick={() => handleClick(row._id)}
+                    >
+                      unblock
                     </button>
                   )}
                 </TableCell>
@@ -192,6 +278,6 @@ const EventType: React.FC = () => {
       />
     </div>
   );
-}
+};
 
 export default EventType;

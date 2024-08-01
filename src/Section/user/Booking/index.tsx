@@ -1,51 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useFormik } from "formik";
-import * as Yup from 'yup';
 import { eventDataTypes, vender, venderType } from '../../../utils/types';
 import { getAllVenderType } from '../../../service/api/admin/apiMethod';
 import Select from 'react-dropdown-select';
-import { NavigateFunction, useLocation, useNavigate } from 'react-router-dom';
+import {  useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../utils/redux/app/store';
 import { bookingEvent, checkAvailability, filterVender } from '../../../service/api/user/apiMethod';
 import { toast } from 'react-toastify';
+import { initialValues,validationSchema } from './validation';
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string()
-    .required("Name is required")
-    .min(3, "Name must be at least 3 characters long"),
-  phone: Yup.string()
-    .required("Phone is required")
-    .matches(/^[0-9]{10}$/, "Phone must be exactly 10 digits"),
-  event: Yup.string()
-    .required("Event is required"),
-  count: Yup.number()
-    .required("Count is required")
-    .positive("Count must be a positive number")
-    .integer("Count must be an integer"),
-  type: Yup.array().of(Yup.string())
-    .required("At least one type is required"),
-  date: Yup.date()
-    .required("Date is required"),
-  time: Yup.string()
-    .required("Time is required"),
-  service: Yup.array().of(Yup.string())
-    .required("At least one service is required"),
-});
-
-const initialValues = {
-  name: '',
-  phone: '',
-  event: '',
-  count: '',
-  type: [],
-  date: '',
-  time: '',
-  service: [],
-  manager: '',
-  locationData: '',
-  user: '',
-};
 
 const Booking: React.FC = () => {
   const [venderData, setVenderData] = useState<venderType[]>([]);
@@ -55,11 +19,11 @@ const Booking: React.FC = () => {
   const [bookedTimes, setBookedTimes] = useState<string[]>([]);
   const location = useLocation();
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  
-  const receivedData = location.state?.type.type || [];
+
+  const receivedData = location.state?.type?.type || [];
   const event = useSelector((state: RootState) => state.event);
   const user = useSelector((state: RootState) => state.user);
-  const navigate: NavigateFunction = useNavigate();
+  const navigate = useNavigate();
 
   useEffect(() => {
     getDetails();
@@ -68,12 +32,6 @@ const Booking: React.FC = () => {
     );
     setData(filteredEvents ?? null);
   }, []);
-
-  useEffect(() => {
-    if (venderData.length > 0) {
-      setSelectedTypes(venderData.map(value => value._id));
-    }
-  }, [venderData]);
 
   const getDetails = async () => {
     try {
@@ -87,14 +45,14 @@ const Booking: React.FC = () => {
   };
 
   useEffect(() => {
-    if (selectedTypes.length > 0) {
       getVenderDetails(selectedTypes);
-    }
+    
   }, [selectedTypes]);
 
   const getVenderDetails = async (selectedTypes: string[]) => {
     try {
       const response = await filterVender(selectedTypes);
+      
       if (response && Array.isArray(response.data)) {
         setServiceData(response.data);
       }
@@ -103,12 +61,12 @@ const Booking: React.FC = () => {
     }
   };
 
-  const fetchAvailableTimes = async (date:string, locationId: string) => {
+  const fetchAvailableTimes = async (date: string, locationId: string) => {
     try {
       const dateObj = new Date(date);
       const response = await checkAvailability(dateObj, locationId);
       if (response.status === 'success' && Array.isArray(response.data)) {
-        const bookedTimes = response.data.map((value: { time: string }) => value.time);
+        const bookedTimes = response.data.map((value: any) => value.time);
         setBookedTimes(bookedTimes);
       } else {
         setBookedTimes([]);
@@ -148,10 +106,9 @@ const Booking: React.FC = () => {
     },
   });
 
-  const handleTypeChange = (selectedOptions: { value: string, label: string }[]) => {
-    const selectedValues = selectedOptions.map((option) => option.value);
+  const handleTypeChange = (selectedOptions: any) => {
+    const selectedValues = selectedOptions.map((option: any) => option.value);
     setSelectedTypes(selectedValues);
-    formik.setFieldValue('type', selectedValues);
   };
 
   const [selectedIds, setSelectedIds] = useState<{ data: string, status: string }[]>([]);
@@ -184,17 +141,30 @@ const Booking: React.FC = () => {
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const date = e.target.value;
     formik.setFieldValue('date', date);
-  
-      fetchAvailableTimes(date, location.state.type._id);
-    
+    fetchAvailableTimes(date, location.state?.type?._id);
   };
+  
 
   return (
-    <div className='min-h-screen'>
-      <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto py-12 px-4 border mt-5 bg-white rounded-lg p-6 shadow-sm">
+    <div className='min-h-screen '>
+      <div className="grid md:grid-cols-2 gap-8  mx-10 py-12 px-4 border mt-5 bg-white rounded-lg p-6 shadow-sm">
         <div className="grid gap-8">
-          <div className="grid md:grid-cols-2 gap-4 ">
-            {serviceData.map((value) => (
+        <div className="mb-4">
+              <label htmlFor="type" className="block text-gray-700">Vendor Type</label>
+              <Select
+                name="type"
+                className="input"
+                options={venderData.map(value => ({ value: value._id, label: value.name }))}
+                values={venderData.filter(option => selectedTypes.includes(option._id))}
+                onChange={handleTypeChange}
+                multi
+                placeholder="Select Vendor Type"
+              />
+         
+            </div>
+          <div className="grid md:grid-cols-2 gap-4 overflow-y-auto ">
+                   
+            {serviceData?.map((value) => (
               <div key={value._id} className="w-full max-w-sm bg-white border border-gray-200 rounded-lg max-h-96">
                 <a href="#">
                   <img
@@ -222,7 +192,7 @@ const Booking: React.FC = () => {
             ))}
           </div>
         </div>
-        <div className="bg-muted rounded-lg p-6 shadow-lg">
+        <div className="bg-muted rounded-lg p-6 shadow-lg mt-12">
           <h2 className="text-2xl font-bold mb-4">Booking</h2>
           <form className="grid gap-4" onSubmit={formik.handleSubmit}>
             <div className="mb-4">
@@ -280,21 +250,7 @@ const Booking: React.FC = () => {
                 <div className="text-red-600">{formik.errors.count}</div>
               ) : null}
             </div>
-            <div className="mb-4">
-              <label htmlFor="type" className="block text-gray-700">Vendor Type</label>
-              <Select
-                name="type"
-                className="input"
-                options={venderData.map(value => ({ value: value._id, label: value.name }))}
-                values={formik.values.type}
-                onChange={handleTypeChange}
-                multi
-                placeholder="Select Vendor Type"
-              />
-              {formik.touched.type && formik.errors.type ? (
-                <div className="text-red-500">{formik.errors.type}</div>
-              ) : null}
-            </div>
+
             <div className='flex'>
               <div className="mb-4 w-2/4">
                 <label className="label" htmlFor="date">Date</label>

@@ -1,4 +1,3 @@
-
 import VenderLoginPage from "../../Section/vender/auth/login/VenderLoginPage";
 import VenderSignup from "../../Section/vender/auth/Signup/VenderSignup";
 import VenderForgot from "../../Section/vender/auth/forgot/VenderForgot";
@@ -10,43 +9,36 @@ import Layout from "../../Section/vender/Layout";
 import Venders from "../../Section/vender/Venders/Venders";
 import AddVenders from "../../Section/vender/Venders/AddVenders";
 import VenderSettings from "../../Section/vender/Settings";
+import NotFound from "../../components/NotFound/NotFound";
+import Chat from "../../Section/vender/chat";
 
 const VenderRouter = () => {
-
   return [
-
- 
     {
       path: "/vender/login",
-      element: (
-          <VenderLoginPage />
-      ),
+      element: <VenderLoginPage />,
+    },
+    {
+      path: "*",
+      element: <NotFound />,
     },
 
     {
       path: "/vender/signup",
-      element: (
-          <VenderSignup />
-      ),
+      element: <VenderSignup />,
     },
     {
       path: "/vender/forgotPassword",
-      element: (
-          <VenderForgot />
-      ),
+      element: <VenderForgot />,
     },
     {
       path: "/vender/reset",
-      element: (
-          <VenderReset />
-      ),
+      element: <VenderReset />,
     },
 
     {
       path: "/vender/otp",
-      element: (
-          <VenderOtp />
-      ),
+      element: <VenderOtp />,
     },
 
     {
@@ -56,34 +48,30 @@ const VenderRouter = () => {
           <Layout />
         </VenderAuth>
       ),
-      children:[{
-        path: "/vender",
-        element: (
-            <Dashboard />
+      children: [
+        {
+          path: "/vender",
+          element: <Dashboard />,
+        },
+        {
+          path: "venders",
+          element: <Venders />,
+        },
+        {
+          path: "settings",
+          element: <VenderSettings />,
+        },
+        {
+          path: "addvenders",
+          element: <AddVenders />,
+        },
+        {
+          path: "chat",
+          element:(   <VenderAuth><Chat /></VenderAuth>),  
         
-        ),
-      },
-      {
-        path: "venders",
-        element: (
-         
-            <Venders />
-      
-        ),
-      },
-      {
-        path: "settings",
-        element: <VenderSettings />,
-      },
-      {
-        path: "addvenders",
-        element: (
-         
-            <AddVenders />
-         
-        ),
-      }
-    ]}
+        },
+      ],
+    },
   ];
 };
 

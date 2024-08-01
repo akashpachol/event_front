@@ -16,8 +16,6 @@ const eventSlice = createSlice({
     initialState,
     reducers: {
         eventAdd: (state, action: PayloadAction<{ data:eventDataTypes[]  }>) => {
-      
-       
         action.payload.data.forEach(newEvent => {
           const exists = state.data?.some(event => event._id === newEvent._id);
           if (!exists) {

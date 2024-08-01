@@ -8,11 +8,13 @@ import {
 } from "../../../utils/types";
 import { getlocationDetails } from "../../../service/api/manager/apiMethod";
 import { toast } from "react-toastify";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../utils/redux/app/store";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
-import { checkAvailability } from "../../../service/api/user/apiMethod";
+import {
+  checkAvailability,
+} from "../../../service/api/user/apiMethod";
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
@@ -22,10 +24,16 @@ const Details = () => {
   const [timeData, setTimeData] = useState<string[] | null>(null);
   const [locationData, setLocationData] = useState<location | null>(null);
   const [data, setData] = useState<eventDataTypes[] | null>(null);
+
   const event = useSelector((state: RootState) => state.event);
+  console.log(event,'aaa')
   const navigate: NavigateFunction = useNavigate();
   const location = useLocation();
   const receivedData = location.state;
+
+
+
+
   const getDetails = useCallback(() => {
     getlocationDetails(receivedData)
       .then((response: ApiResponseLocation) => {
@@ -86,8 +94,20 @@ const Details = () => {
   };
   const allTimeData: string[] = ["full Day", "morning", "evening"];
 
+console.log(data,'gjfgjgh')
+
   return (
-    <div className="  py-20  w-full bg-white">
+    <div className="  py-14  w-full bg-white">
+      <div className="flex  justify-end">
+        <button
+          className="authentication_button w-48 mb-5 me-14"
+          onClick={() => {
+            navigate("/chat");
+          }}
+        >
+          connect
+        </button>
+      </div>
       <div className="h-96">
         <LayoutGrid cards={state} />
       </div>
@@ -134,7 +154,6 @@ const Details = () => {
                 </th>
 
                 <td className="px-6 py-4 text-lg">
-                  {" "}
                   {locationData?.discountPrice === locationData?.price ? (
                     <span>{locationData?.price}</span>
                   ) : locationData?.discountPrice ? (
@@ -184,7 +203,11 @@ const Details = () => {
             Check Availability
           </h3>
           <div className="flex  justify-center">
-            <Calendar onChange={handleChange} value={value} minDate={new Date()} />
+            <Calendar
+              onChange={handleChange}
+              value={value}
+              minDate={new Date()}
+            />
           </div>
           <div>
             <ul className="flex px-20">

@@ -76,6 +76,15 @@ export type signupInputs = {
     role?:string
   }
 
+  export type ApiSearchResponse={
+    status: string;
+    message: string;
+  
+    data?: object| [];
+   
+  }
+
+
   export type ApiError = {
     response: {
       data: {
@@ -118,7 +127,10 @@ export type signupInputs = {
     image?:string| undefined,
     createdAt?:string,
     updatedAt?:string,
-    isBlocked?:boolean
+    isBlocked?:boolean,
+    refreshToken?:string,
+    refreshTokenExpiresAt?:string
+    role:string
   }
 
 
@@ -234,7 +246,7 @@ _id?:string
  export type bookingData={
   _id?: string|undefined;
   name:string,
-  event:string,
+  event:eventDataTypes,
   count:string,
   type: string[],
   time:string,
@@ -252,6 +264,16 @@ _id?:string
   loading: boolean,
 
 data:eventDataTypes[]|null
+
+}
+
+export type selectUser={
+  loading: boolean,
+
+
+  user:userDataTypes|null,
+
+
 
 }
 
@@ -274,6 +296,25 @@ export type ApiResponseOfWallet={
   
 }
 
+export type ApiResponseOfChat={
+  status: string;
+  message: string;
+
+  data?:chat
+ 
+  
+}
+
+export type ApiResponseOfMessage={
+  status: string;
+  message: string;
+
+  data?:message
+ 
+  
+}
+
+
 
 export type wallet={
   _id?:string
@@ -290,9 +331,39 @@ export type transaction={
   _id?:string
   date: string;
   amount: number;
-  type:string
+  type:string 
+}
 
- 
- 
-  
+
+export type chatType={
+  _id?:string
+  chatName: string;
+  users: userDataTypes[];
+  isGroupChat:boolean;
+  messages?:any 
+  groupAdmin?:string;  
+}
+
+export type chatSliceType={
+loading:boolean,
+data:chat |null,
+}
+
+export type message={
+  _id?:string
+  content: string;
+  sender: userDataTypes;
+  chat:chatType;
+  readBy?:userDataTypes,
+  createdAt:string
+}
+
+
+export type chat={
+  _id?:string
+  chatName?: string;
+  isGroupChat?: boolean;
+  users?: userDataTypes[];
+  messages?: string[];
+  groupAdmin?:string;  
 }

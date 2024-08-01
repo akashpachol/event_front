@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
 import {
-  bookingCancel,
+
   getBookingDetails,
 } from "../../../service/api/user/apiMethod";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ApiResponseOfBooking, bookingData } from "../../../utils/types";
-import Swal from "sweetalert2";
+
+import CancelModal from "./CancelModal";
 
 const BookingDeatails: React.FC = () => {
   const [bookingData, setBookingData] = useState<bookingData | null>(null);
   const [api, setApi] = useState(false);
+  const [open, setOpen] = React.useState(false);
 
   const location = useLocation();
   const receivedData = location.state;
@@ -18,11 +20,14 @@ const BookingDeatails: React.FC = () => {
     getDetails();
   }, [api]);
 
+  const toggleButton = () => {
+    setOpen(!open);
+  };
+
   const getDetails = () => {
     getBookingDetails(receivedData.id)
       .then((response: ApiResponseOfBooking) => {
         if (response.data) {
-
           setBookingData(response.data as bookingData);
         } else {
           toast.error("No location data found");
@@ -45,34 +50,7 @@ const BookingDeatails: React.FC = () => {
     return dayDifference > 2;
   };
 
-  const handleCancel = async(id: string | undefined, reason: string) => {
-
-
-
-    const result = await Swal.fire({
-      title: "Are you sure to cancel booking?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes",
-    });
-    if (result.isConfirmed) {
-      bookingCancel(id, reason)
-      .then((response) => {
-        if (response.status === "success") {
-          setApi((prev) => !prev);
-        } else {
-          toast.error(response.message);
-        }
-      })
-      .catch((error) => {
-        toast.error(error?.message);
-      });
-    }
-   
-  };
+  console.log(bookingData?.event.name);
 
   return (
     <div className="flex flex-col min-h-screen mx-24 ">
@@ -88,7 +66,11 @@ const BookingDeatails: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-muted-foreground">Date</p>
-                    <p>{new Date(bookingData?.date).toLocaleDateString() }</p>
+                    <p>
+                      {new Date(
+                        bookingData?.date ? bookingData?.date : ""
+                      ).toLocaleDateString()}
+                    </p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Time</p>
@@ -104,12 +86,11 @@ const BookingDeatails: React.FC = () => {
                   <div>
                     <p className="text-muted-foreground">Duration</p>
                     <p>
-                      {" "}
                       {bookingData?.time == "full Day" ? (
                         <p>12 hours</p>
                       ) : (
                         <p>6 hours</p>
-                      )}{" "}
+                      )}
                       {bookingData?.time == "evening" ? (
                         <p>(4:00 PM to 11:00 PM)</p>
                       ) : bookingData?.time == "full Day" ? (
@@ -158,27 +139,41 @@ const BookingDeatails: React.FC = () => {
                   <p>{bookingData?.count} people</p>
                 </div>
                 <div>
+                  <p className="text-muted-foreground">Event</p>
+                  <p>{bookingData?.event.name} </p>
+                </div>
+                <div>
                   <p className="text-muted-foreground">Price</p>
                   <p>{bookingData?.total}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Cancellation Policy</p>
-              
+                  cancel option is available 2 days  before booked date
                   {isMoreThan2DaysAhead() && (
                     <div className="mt-5 ">
                       {bookingData?.status == "cancelled" ? (
-                        <p className="bg-red-500 w-1/2 text-white px-4 py-2 rounded-lg">
+                        <p className="bg-red-200 w-1/2 text-black px-4 py-2 rounded-lg">
                           Cancelled
                         </p>
                       ) : (
-                        <button
-                          onClick={() =>
-                            handleCancel(bookingData?._id, "emergency")
-                          }
-                          className="bg-red-500 text-white px-4 py-2 rounded-lg"
-                        >
-                          Cancel Booking
-                        </button>
+                        <div>
+                     
+                          <button
+                            onClick={toggleButton}
+                            className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                          >
+                       
+                            Cancel Booking
+                          </button>
+                          {open && (
+                            <CancelModal
+                            id={bookingData?._id}
+                            api={api} setApi={setApi}
+                              toggleButton={toggleButton}
+                              open={open}
+                            />
+                          )}
+                        </div>
                       )}
                     </div>
                   )}

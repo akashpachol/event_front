@@ -17,6 +17,9 @@ import UserbookingHistory from "../../Section/Manager/UserbookingHistory";
 import UserBookingDetails from "../../Section/Manager/UserbookingHistory/UserBookingDetails";
 import VenderBooking from "../../Section/Manager/UserbookingHistory/VenderBooking";
 import Offer from "../../Section/Manager/Offer";
+import NotFound from "../../components/NotFound/NotFound";
+import Chat from "../../Section/Manager/chat";
+import Wallet from "../../Section/Manager/Wallet";
 
 const ManagerRouter = () => {
   return [
@@ -27,6 +30,10 @@ const ManagerRouter = () => {
           <ManagerLogin />
         </>
       ),
+    },
+    {
+      path: "*",
+      element: <NotFound />,
     },
     {
       path: "/manager/signup",
@@ -99,6 +106,17 @@ const ManagerRouter = () => {
         {
           path: "offer",
           element: <Offer />,
+        },
+
+        {
+          path: "wallet",
+          element:( <Wallet/>),  
+        
+        },
+        {
+          path: "chat",
+          element:(   <Chat />),  
+        
         },
       ],
     },

@@ -6,10 +6,10 @@ import { RootState } from "../../../utils/redux/app/store";
 import { useSelector } from "react-redux";
 import { editProfileImg, getUserDeatails } from "../../../service/api/manager/apiMethod";
 import { toast } from "react-toastify";
-import Sidebar from "../../user/Settings/contents/Sidebar";
 import ProfileModal from "./contents/ProfileModal";
 import CropperDemo from "./contents/cropper/Cropper";
 import profileicon from '../../../assets/icons/space-default.webp'
+import Sidebar from "./contents/Sidebar";
 
 const ManagerSettings: React.FC = () => {
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useState } from "react";
 import { BiLayout } from "react-icons/bi";
-
+import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import { RiHome2Line } from "react-icons/ri";
 import { Link, NavigateFunction, useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
@@ -88,6 +88,7 @@ const Layout:React.FC = () => {
 
 
 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+  <p className='me-5 text-2xl text-green-600 cursor-pointer' onClick={()=>   navigate("/manager/chat")}><IoChatbubbleEllipsesOutline /></p>
       
       {user.managerToken ?(<div className="relative ml-3" ref={dropdownRef}>
                     <div>

@@ -25,7 +25,7 @@ const Sidebar:React.FC = () => {
 
             <li>
                   <Link
-                    to={'/wallet'}
+                    to={'/manager/wallet'}
                     className="relative flex flex-row items-center h-11 hover:bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600    dark:focus:ring-cyan-800 border-2 "
                   >
                     <span className="inline-flex justify-center items-center ml-4">

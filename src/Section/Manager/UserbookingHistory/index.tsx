@@ -17,10 +17,11 @@ import { toast } from "react-toastify";
 
 
 import { bookingData } from "../../../utils/types";
-import {  getUserBookingDetails, getUserBookingHistory } from "../../../service/api/manager/apiMethod";
+import {  getUserBookingHistory } from "../../../service/api/manager/apiMethod";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import {  useSelector } from "react-redux";
+import {  useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../utils/redux/app/store";
+import { bookingAdd } from "../../../utils/redux/slice/bookingSlice";
 
 export interface eventDataTypes {
   _id: number;
@@ -38,7 +39,7 @@ const UserbookingHistory: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [bookingData, setBookingData] = useState<bookingData[]>([]);
   const [filteredRows, setFilteredRows] = useState<bookingData[]>([]);
-
+const dispatch=useDispatch()
   const manager = useSelector((state: RootState) => state.manager);
 
   const color = grey[200];
@@ -101,20 +102,14 @@ const UserbookingHistory: React.FC = () => {
     rowsPerPage -
     Math.min(rowsPerPage, filteredRows.length - page * rowsPerPage);
 
-  const handleLocation = async (bookingId: string) => {
-    try {
-      const response = await getUserBookingDetails(bookingId);
+  const handleLocation = async (bookingId: string|undefined) => {
+  
+     
 
- 
-        navigate("/manager/UserBookingDetails", { state: response.data });
+    dispatch(bookingAdd({data:bookingId}))
+        navigate("/manager/UserBookingDetails");
     
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unknown error occurred");
-      }
-    }
+    
   };
   return (
     <div className="mx-5">

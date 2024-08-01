@@ -10,6 +10,7 @@ import Manager from "../../Section/Admin/Manager";
 import ViewLocation from "../../Section/Admin/Manager/ViewLocation";
 import Venders from "../../Section/Admin/Vender";
 import ViewVender from "../../Section/Admin/Vender/ViewVender";
+import NotFound from "../../components/NotFound/NotFound";
 
 
 
@@ -25,6 +26,10 @@ const AdminRouter = () => {
           <AdminLogin />
  
       ),
+    },
+    {
+      path: "*",
+      element: <NotFound />,
     },
     {
       path: "/admin",

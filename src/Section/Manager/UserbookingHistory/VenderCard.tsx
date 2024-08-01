@@ -1,17 +1,17 @@
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { vender } from "../../../utils/types";
+import { bookingData, vender } from "../../../utils/types";
 
-const VenderCard: React.FC<{ vender: vender,bookingId:string,status:string }> = ({ vender,bookingId,status }) => {
+const VenderCard: React.FC<{ vender: vender,receivedData:bookingData,status:string }> = ({ vender,receivedData,status }) => {
   const navigate: NavigateFunction = useNavigate();
+      console.log(receivedData,'fdfhdjfhj');
       
 
   const handleBooking = () => {
-  
     
     navigate('/manager/VenderBooking', {
       state: {
         venderId: vender._id,
-        bookingId: bookingId
+        receivedData: receivedData
       }
     });
   }
@@ -36,6 +36,7 @@ const VenderCard: React.FC<{ vender: vender,bookingId:string,status:string }> = 
         <span className="font-sm">{vender?.address}</span>
         </div>
         {status=='pending'? (   <button className="manager_button mt-5"onClick={handleBooking}>book now</button>
+):status=='cancelled'? (   <button className="manager_button mt-5">Cancelled</button>
 ):(   <p className="manager_button mt-5" >booked</p>
 )}
       </div>

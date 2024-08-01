@@ -9,6 +9,7 @@ import { logout } from '../../../utils/redux/slice/Auth/VenderAuthSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../utils/redux/app/store';
 import { NavLink } from 'react-router-dom';
+import { IoChatbubbleEllipsesOutline } from 'react-icons/io5';
 const Layout:React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.vender);
@@ -88,7 +89,8 @@ const Layout:React.FC = () => {
 
 
 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-      
+<p className='me-5 text-2xl text-green-600 cursor-pointer' onClick={()=>   navigate("/vender/chat")}><IoChatbubbleEllipsesOutline /></p>
+
       {user.venderToken ?(<div className="relative ml-3" ref={dropdownRef}>
                     <div>
                       <button
@@ -195,6 +197,8 @@ const Layout:React.FC = () => {
           <RiHome2Line className="w-4 h-4" />
           <div className="text-white hover:text-black">venders</div>
         </div></NavLink>
+
+        
  
     
       </div>

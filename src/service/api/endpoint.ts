@@ -22,7 +22,14 @@ export const userUrls = {
   bookingDetails: "/booking/bookingDetails",  
   checkAvailability: "/booking/checkAvailability",  
   bookingCancel: "/booking/bookingCancel", 
-  getWallet: "/user/getWallet", 
+  getWallet: "/user/getWallet",
+  searchData: "/user/searchData",
+  getManger: "/user/manager",
+  allChats: "/chat/allChats",
+  message:'/message',
+  createChat:'/chat',
+  getUnreadMessagesFromChat:"/message/getUnreadMessagesFromChat",
+
 };
 
 export const adminUrls = {
@@ -60,6 +67,15 @@ export const managerUrls = {
   getOffer: "/offer/getOffer", 
   blockOffer: "/offer/blockOffer", 
   editOffer: "/offer/editOffer", 
+  searchData: "/user/searchData",
+  getManger: "/user/manager",
+  allChats: "/chat/allChats",
+  groupChat: "/chat/group",
+  message:'/message',
+   createChat:'/chat',
+   getUnreadMessagesFromChat:"/message/getUnreadMessagesFromChat",
+   getWallet: "/user/getWallet",
+
 };
 
 export const venderUrls = {
@@ -67,4 +83,10 @@ export const venderUrls = {
   geVenderwithId: "/vender/getvenderwithid",
   getUserData: "/user/profile",
   editProfileImg: "/user/profileimage",
+  searchData: "/user/searchData",
+  getUnreadMessagesFromChat:"/message/getUnreadMessagesFromChat",
+  allChats: "/chat/allChats",
+  createChat:'/chat',
+  message:'/message',
+
 };

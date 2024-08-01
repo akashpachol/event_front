@@ -14,6 +14,8 @@ import Payment from "../../Section/user/Booking/Payment";
 import BookingHistory from "../../Section/user/Booking/BookingHistory";
 import BookingDeatails from "../../Section/user/Booking/BookingDeatails";
 import Wallet from "../../Section/user/Wallet";
+import NotFound from "../../components/NotFound/NotFound";
+import Chat from "../../Section/user/chat";
 
 const UserRouters = () => {
   return [
@@ -40,6 +42,10 @@ const UserRouters = () => {
     {
       path: "/forgotPassword",
       element: <Forgot />,
+    },
+    {
+      path: "*",
+      element: <NotFound />,
     },
 
     {
@@ -97,6 +103,11 @@ const UserRouters = () => {
         {
           path: "wallet",
           element:(   <UserAuth><Wallet /></UserAuth>),  
+        
+        },
+        {
+          path: "chat",
+          element:(   <UserAuth><Chat /></UserAuth>),  
         
         },
       ],

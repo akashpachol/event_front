@@ -22,20 +22,13 @@ const validationSchema = Yup.object().shape({
     .required("Date is required"),
 });
 
-const initialValues = {
-  name: '',
-  event: '',
-  count: '',
-  date: '',
-  manager: '',
-  vender: '',
-};
+
 
 const VenderBooking: React.FC = () => {
   const [venderData, setVenderData] = useState<vender | null>(null);
   const location = useLocation();
   const receivedData = location.state.venderId;
-  const bookingData = location.state.bookingId;
+  const bookingData = location.state.receivedData;
   const event = useSelector((state: RootState) => state.event);
   const manager = useSelector((state: RootState) => state.manager);
   const navigate: NavigateFunction = useNavigate();
@@ -58,6 +51,16 @@ const VenderBooking: React.FC = () => {
       });
   };
 
+  const initialValues = {
+    name: bookingData.name||'',
+    event:bookingData.event._id|| '',
+    count: bookingData.count||'',
+    date:bookingData.date ? new Date(bookingData.date).toISOString().substr(0, 10) : '',
+    manager: '',
+    vender: '',
+  };
+console.log(initialValues,'jhkjghj');
+
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -70,14 +73,14 @@ const VenderBooking: React.FC = () => {
         manager: manager.managerId,
         vender: venderData?.vender?._id,
         status: 'pending',
-        bookingData
+        bookingData:bookingData._id
       };
   
       bookingService(data)
       .then((response) => {
         if (response.status === 'success') {
           toast.success(response.message);
-          navigate('/manager/UserbookingHistory')
+          navigate('/manager/UserBookingDetails')
         } else {
           toast.error(response.message);
         }
@@ -124,7 +127,7 @@ const VenderBooking: React.FC = () => {
                   {...formik.getFieldProps('name')}
                 />
                 {formik.touched.name && formik.errors.name ? (
-                  <div className="text-red-600">{formik.errors.name}</div>
+                  <div className="text-red-600">{formik.errors.name as string}</div>
                 ) : null}
               </div>
               <div className="mb-4">
@@ -140,7 +143,7 @@ const VenderBooking: React.FC = () => {
                   ))}
                 </select>
                 {formik.touched.event && formik.errors.event ? (
-                  <div className="text-red-600">{formik.errors.event}</div>
+                  <div className="text-red-600">{formik.errors.event as string}</div>
                 ) : null}
               </div>
               <div className="mb-4">
@@ -153,7 +156,7 @@ const VenderBooking: React.FC = () => {
                   {...formik.getFieldProps('count')}
                 />
                 {formik.touched.count && formik.errors.count ? (
-                  <div className="text-red-600">{formik.errors.count}</div>
+                  <div className="text-red-600">{formik.errors.count as string}</div>
                 ) : null}
               </div>
               <div className="mb-4">

@@ -72,7 +72,7 @@ const Payment:React.FC = () => {
               </div> */}
               <div className="flex items-center justify-between">
                 <div className="text-lg font-medium">Total</div>
-                <div className="text-lg font-medium">${receivedData.total}</div>
+                <div className="text-lg font-medium">₹{receivedData.total}</div>
               </div>
             </div>
             <div className="grid gap-4">
