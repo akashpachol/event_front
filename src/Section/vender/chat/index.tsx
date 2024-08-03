@@ -13,6 +13,7 @@ import { extractTime } from "../../../utils/ExtractTime";
 import Picker from "emoji-picker-react";
 import { getMessage, postMessage } from "../../../service/api/vender/apiMethod";
 import chatImage from "../../../assets/img/chat.jpg"
+import { chatSeen } from "../../../utils/ChatLogic";
 
 const Chat: React.FC = () => {
   const [messages, setMessages] = useState<message[]>([]);
@@ -174,6 +175,8 @@ if(chat.data?._id){
               <div className="text-sm ">{value.content}</div>
               <div className="text-[10px] text-primary-foreground/80 mt-1">
               {extractTime(value.createdAt)}
+              {chatSeen(vender.venderId,value.chatId.users,value.readBy)?(<span className="text-blue-600">✓✓</span>):(<span className="text-gray-500">✓✓</span>)}
+
               </div>
             </div>
           </div>
@@ -185,6 +188,7 @@ if(chat.data?._id){
               <div className="text-sm ">{value.content}</div>
               <div className="text-[10px] text-primary-foreground/80 mt-1">
                 {extractTime(value.createdAt)}
+
               </div>
             </div>
           </div>

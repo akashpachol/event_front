@@ -2,7 +2,7 @@ import React, { useEffect, useState }  from "react";
 import {  IoMdSend } from "react-icons/io";
 
 import MyChat from "./MyChat";
-import { getMessage, postMessage } from "../../../service/api/user/apiMethod";
+import { deleteEveryOne, getMessage, postMessage } from "../../../service/api/user/apiMethod";
 import { RootState } from "../../../utils/redux/app/store";
 import {  useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -12,6 +12,7 @@ import ScrollableFeed from "react-scrollable-feed";
 import { useSocket } from "../../../utils/context/SocketContext";
 import { extractTime } from "../../../utils/ExtractTime";
 import Picker from "emoji-picker-react";
+import { chatSeen } from "../../../utils/ChatLogic";
 const Chat: React.FC = () => {
   const [messages, setMessages] = useState<message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -46,12 +47,34 @@ const Chat: React.FC = () => {
   useEffect(() => {
 
 
-    socket?.on("receiveMsg", (MessageData) => {
+    socket?.on("receiveMsg", () => {
 
-      setMessages([...messages, MessageData]);
+      getDetails();
     });
     return () => {
       socket?.off("receiveMsg");
+    };
+  }, [socket,messages, setMessages]);
+
+  
+  useEffect(() => {
+    socket?.on("responsedeleteEveryOne", (messageId) => {
+      const updatedMessages = messages.filter(item => item._id != messageId)
+      setMessages(updatedMessages);
+    });
+    return () => {
+      socket?.off("responsedeleteEveryOne");
+    };
+  }, [socket, messages, setMessages]);
+
+
+  useEffect(() => {
+    socket?.on("responseSeen", (MessageData) => {
+
+      setMessages( MessageData);
+    });
+    return () => {
+      socket?.off("responseSeen");
     };
   }, [socket,messages, setMessages]);
 
@@ -71,7 +94,8 @@ if(chat.data?._id){
       const response = await getMessage(chat.data?._id, user.userId);
       if (response && Array.isArray(response.data)) {
         setMessages(response.data);
-        
+        socket?.emit('seen',response.data, chat.data?._id);
+
     
         setLoading(false);
       }
@@ -115,6 +139,33 @@ if(chat.data?._id){
     setNewMessage((prevInput) => prevInput + emojiObject.emoji);
     setShowPicker(false);
   };
+  const [openDropdown, setOpenDropdown] = useState(null);
+
+  const handleDropdownToggle = (id) => {
+    setOpenDropdown(openDropdown === id ? null : id);
+  };
+
+
+  
+  const handleMessageForEveryOne=async(id:string)=>{
+
+    try {
+      const response = await deleteEveryOne(
+    id
+      );
+      if (response.status === "success") {
+
+          socket?.emit("deleteEveryOne",id, chat.data?._id);
+
+    
+        
+      }
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      toast.error(errorMessage);
+    }
+  
+}
 
 
   return (
@@ -125,8 +176,7 @@ if(chat.data?._id){
         <div className="sticky z-20 top-0 p-4 border-b bg-white">
           {userSelect ? (
             <>
-            {console.log(userSelect,'userselect')
-            }
+         
               <div className="flex items-center gap-3">
               <div className="relative">
                 <img
@@ -183,6 +233,7 @@ if(chat.data?._id){
                       <div
                         className={`flex justify-end gap-3 `}
                         key={value._id}
+                        onClick={() => handleDropdownToggle(value._id)}
                       >
                    
                         <div
@@ -191,8 +242,24 @@ if(chat.data?._id){
                           <div className="text-sm ">{value.content}</div>
                           <div className="text-[10px] text-primary-foreground/80 mt-1">
                           {extractTime(value.createdAt)}
+                          {chatSeen(user.userId,value.chatId.users,value.readBy)?(<span className="text-blue-600">✓✓</span>):(<span className="text-gray-500">✓✓</span>)}
+
                           </div>
                         </div>
+                        {openDropdown === value._id && (
+                            <div
+                              className={`absolute bg-white right-40 mt-10 border rounded shadow-lg transition-opacity duration-700 ease-in-out ${
+                                openDropdown === value._id
+                                  ? "opacity-100"
+                                  : "opacity-0"
+                              }`}
+                            >
+                              <ul>
+                                <li className="p-2" onClick={()=>handleMessageForEveryOne(value._id)}>Delete for every one </li>
+                                <li className="p-2">Delete for me</li>
+                              </ul>
+                            </div>
+                          )}
                       </div>
                     ) : (
                       <div className={`flex  gap-3 `} key={value._id}>

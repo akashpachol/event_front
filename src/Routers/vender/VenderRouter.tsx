@@ -11,6 +11,8 @@ import AddVenders from "../../Section/vender/Venders/AddVenders";
 import VenderSettings from "../../Section/vender/Settings";
 import NotFound from "../../components/NotFound/NotFound";
 import Chat from "../../Section/vender/chat";
+import ManagerbookingHistory from "../../Section/vender/MangerbookingHistory";
+import ManagerBookingDetails from "../../Section/vender/MangerbookingHistory/MangerBookingDetails";
 
 const VenderRouter = () => {
   return [
@@ -56,6 +58,15 @@ const VenderRouter = () => {
         {
           path: "venders",
           element: <Venders />,
+        },
+
+        {
+          path: "managerbookingHistory",
+          element: <ManagerbookingHistory />,
+        },
+        {
+          path: "managerBookingDetails",
+          element: <ManagerBookingDetails />,
         },
         {
           path: "settings",

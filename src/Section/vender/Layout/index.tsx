@@ -197,7 +197,12 @@ const Layout:React.FC = () => {
           <RiHome2Line className="w-4 h-4" />
           <div className="text-white hover:text-black">venders</div>
         </div></NavLink>
-
+        
+        <NavLink  to={'/vender/managerbookingHistory'} >
+        <div className="hover:ml-4  w-full text-white mt-1 hover:text-black bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br  p-2 pl-8 rounded-lg transform ease-in-out duration-500 flex flex-row items-center space-x-3  border" >
+          <RiHome2Line className="w-4 h-4" />
+          <div className="text-white hover:text-black">managerbookingHistory</div>
+        </div></NavLink>
         
  
     

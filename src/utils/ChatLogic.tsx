@@ -2,12 +2,34 @@ import { userDataTypes } from "./types";
 
 export const getSender = (loggedUser:string|null|undefined, users:userDataTypes[]) => {
 
-console.log(loggedUser,'hgkhhgj',users);
 
     const result= users[0]?._id ==loggedUser ? users[1] : users[0];
     
     return result
   };
+
+
+  export const chatSeen = (loggedUser:string|null|undefined, users:string[],readUser:string[]) => {
+    console.log(users,'ll',readUser);
+    
+
+    if (users.length !== readUser.length) {
+      console.log(false);
+      
+      return false;
+  }
+  for (let i = 0; i < users.length; i++) {
+      if ( !readUser.includes(users[i])) {
+   return false
+      }
+  }
+
+  return true;
+
+    
+    
+   
+      };
 
 
   

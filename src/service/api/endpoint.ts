@@ -13,7 +13,7 @@ export const authUrls = {
 export const userUrls = {
   getUserData: "/user/profile",
   editProfileImg: "/user/profileimage",
-  getlocation: "/user/getVerifyLocation",
+  getlocation: "/location/getVerifyLocation",
   filterVender: "/vender/filterVender",
   bookingEvent: "/booking/bookLocation",
   paymentEvent: "/booking/paymentBooking",
@@ -88,5 +88,11 @@ export const venderUrls = {
   allChats: "/chat/allChats",
   createChat:'/chat',
   message:'/message',
+  getMangerBooking:"/booking/getMangerBooking",
+  getMangerbookingDetails:"/booking/getMangerbookingDetails",
+};
+export const commenUrls = {
+  deleteForMe: "/message/deleteForMe",
+  deleteForEveryOne: "/message/deleteEveryOne",
 
 };

@@ -7,10 +7,8 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TablePagination,
   Typography,
 } from "@mui/material";
-import { grey } from "@mui/material/colors";
 
 import {
   blockUser,
@@ -24,6 +22,10 @@ import { getAlllocationwithId } from "../../../service/api/manager/apiMethod";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "../../../utils/redux/slice/Auth/managerAuthSlice";
+import { search } from "../../../utils/SearchLogic";
+import Search from "../../../components/Admin/Table/Search";
+import TableHeader from "../../../components/Admin/Table/TableHeader";
+import Pagination from "../../../components/Admin/Table/Pagination";
 
 export interface eventDataTypes {
   _id: number;
@@ -42,9 +44,10 @@ const Manager: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [managerData, setManagerData] = useState<userDataTypes[]>([]);
   const [filteredRows, setFilteredRows] = useState<userDataTypes[]>([]);
+
+  const [heading] = useState(["id", "Username", "Email", "Phone", "Actions"]);
   const dispatch = useDispatch();
 
-  const color = grey[200];
   const navigate: NavigateFunction = useNavigate();
 
   useEffect(() => {
@@ -71,36 +74,14 @@ const Manager: React.FC = () => {
 
   useEffect(() => {
     const debounce = setTimeout(() => {
-      const filtered = managerData.filter((userValue) =>
-        Object.values(userValue).some(
-          (value) =>
-            value &&
-            value.toString().toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      );
+      const filtered = search(managerData, searchQuery);
       setFilteredRows(filtered);
     }, 1000);
 
     return () => clearTimeout(debounce);
   }, [searchQuery, managerData]);
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(event.target.value);
-  };
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
   const handleClick = async (id: string) => {
-    console.log(id, "jdhshdjh");
     const result = await Swal.fire({
       title: "Are you sure to block manager?",
       text: "You won't be able to revert this!",
@@ -147,73 +128,12 @@ const Manager: React.FC = () => {
   return (
     <div className="mx-5">
       <div className="flex justify-between">
-        <input
-          placeholder="Search"
-          className="border-2 my-6 p-2"
-          value={searchQuery}
-          onChange={handleSearchChange}
-        />
+        <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       </div>
       <TableContainer component={Paper}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
-            <TableRow>
-              <TableCell
-                align="center"
-                sx={{
-                  maxWidth: "50px",
-                  fontWeight: "bold",
-                  backgroundColor: color,
-                  color: "black",
-                }}
-              >
-                ID
-              </TableCell>
-              <TableCell
-                align="center"
-                sx={{
-                  maxWidth: "150px",
-                  fontWeight: "bold",
-                  backgroundColor: color,
-                  color: "black",
-                }}
-              >
-                Username
-              </TableCell>
-              <TableCell
-                align="center"
-                sx={{
-                  maxWidth: "150px",
-                  fontWeight: "bold",
-                  backgroundColor: color,
-                  color: "black",
-                }}
-              >
-                Email
-              </TableCell>
-              <TableCell
-                align="center"
-                sx={{
-                  maxWidth: "50px",
-                  fontWeight: "bold",
-                  backgroundColor: color,
-                  color: "black",
-                }}
-              >
-                Phone
-              </TableCell>
-              <TableCell
-                align="center"
-                sx={{
-                  maxWidth: "150px",
-                  fontWeight: "bold",
-                  backgroundColor: color,
-                  color: "black",
-                }}
-              >
-                Actions
-              </TableCell>
-            </TableRow>
+            <TableHeader heading={heading} />
           </TableHead>
           <TableBody>
             {(rowsPerPage > 0
@@ -270,14 +190,13 @@ const Manager: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={rowsPerPageOptions}
-        component="div"
-        count={filteredRows.length}
-        rowsPerPage={rowsPerPage}
+      <Pagination
+        setPage={setPage}
         page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
+        setRowsPerPage={setRowsPerPage}
+        rowsPerPage={rowsPerPage}
+        rowsPerPageOptions={rowsPerPageOptions}
+        count={filteredRows.length}
       />
     </div>
   );

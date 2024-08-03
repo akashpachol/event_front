@@ -21,6 +21,7 @@ import NotFound from "../../components/NotFound/NotFound";
 import Chat from "../../Section/Manager/chat";
 import Wallet from "../../Section/Manager/Wallet";
 
+
 const ManagerRouter = () => {
   return [
     {
@@ -107,6 +108,8 @@ const ManagerRouter = () => {
           path: "offer",
           element: <Offer />,
         },
+
+      
 
         {
           path: "wallet",

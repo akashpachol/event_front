@@ -237,3 +237,47 @@ export const postMessage = (
     }
   });
 };
+
+
+
+export const getManagerBookingHistory = (
+  venderId: string | null | undefined
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${venderUrls.getMangerBooking}/${venderId}`;
+  
+
+      apiCall("get", url, null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+export const getManagerBookingDetails = (
+  bookingId: string | null | undefined
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${venderUrls.getMangerbookingDetails}/${bookingId}`;
+
+
+      apiCall("get", url, null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};

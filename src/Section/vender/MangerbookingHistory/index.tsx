@@ -9,47 +9,53 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-
-import {
-  blockUser,
-  getAllVenderDeatails,
-} from "../../../service/api/admin/apiMethod";
 import { toast } from "react-toastify";
-
-import Swal from "sweetalert2";
-import { userDataTypes } from "../../../utils/types";
+import { bookingData } from "../../../utils/types";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { getAllVenderwithId } from "../../../service/api/vender/apiMethod";
-import { useDispatch } from "react-redux";
-import { logout } from "../../../utils/redux/slice/Auth/VenderAuthSlice";
-import Pagination from "../../../components/Admin/Table/Pagination";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../../utils/redux/app/store";
+import { bookingAdd } from "../../../utils/redux/slice/bookingSlice";
+import { getManagerBookingHistory } from "../../../service/api/vender/apiMethod";
 import TableHeader from "../../../components/Admin/Table/TableHeader";
 import Search from "../../../components/Admin/Table/Search";
-import { search } from "../../../utils/SearchLogic";
+import Pagination from "../../../components/Admin/Table/Pagination";
+
+export interface eventDataTypes {
+  _id: number;
+  name: string;
+  description: string;
+  image?: string;
+  isBlocked?: boolean;
+}
 
 const rowsPerPageOptions = [5, 10, 25];
 
-const Venders: React.FC = () => {
+const ManagerbookingHistory: React.FC = () => {
   const [page, setPage] = useState(0);
-  const [api, setApi] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [venderData, setVenderData] = useState<userDataTypes[]>([]);
-  const [filteredRows, setFilteredRows] = useState<userDataTypes[]>([]);
-  const [heading] = useState(["id", "Username", "Email", "Phone", "Actions"]);
-
+  const [bookingData, setBookingData] = useState<bookingData[]>([]);
+  const [filteredRows, setFilteredRows] = useState<bookingData[]>([]);
+  const [heading] = useState([
+    "id",
+    "UserName",
+    "Name of event",
+    "Phone",
+    "vender Name",
+    "Total",
+    "Actions",
+  ]);
   const dispatch = useDispatch();
+  const vender = useSelector((state: RootState) => state.vender);
   const navigate: NavigateFunction = useNavigate();
-
   useEffect(() => {
     getDetails();
-  }, [api]);
-
+  }, []);
   const getDetails = async () => {
     try {
-      const response = await getAllVenderDeatails();
+      const response = await getManagerBookingHistory(vender.venderId);
       if (response && Array.isArray(response.data)) {
-        setVenderData(response.data);
+        setBookingData(response.data);
         setFilteredRows(response.data);
       } else {
         toast.error("No user data found");
@@ -62,72 +68,33 @@ const Venders: React.FC = () => {
       }
     }
   };
-
   useEffect(() => {
     const debounce = setTimeout(() => {
-      const filtered = search(venderData, searchQuery);
+      const filtered = bookingData.filter((bookingValue) =>
+        Object.values(bookingValue).some(
+          (value) =>
+            value &&
+            value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      );
       setFilteredRows(filtered);
     }, 1000);
 
     return () => clearTimeout(debounce);
-  }, [searchQuery, venderData]);
-
-  const handleClick = async (id: string) => {
-    const result = await Swal.fire({
-      title: "Are you sure to block vender",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, block it!",
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await blockUser(id);
-
-        dispatch(logout());
-        console.log("hai");
-
-        setApi((prev) => !prev);
-      } catch (error) {
-        const errorMessage = (error as Error).message;
-        toast.error(errorMessage);
-      }
-    }
-  };
-
+  }, [searchQuery, bookingData]);
   const emptyRows =
     rowsPerPage -
     Math.min(rowsPerPage, filteredRows.length - page * rowsPerPage);
 
-  const handleVender = async (venderId: string) => {
-    try {
-      const response = await getAllVenderwithId(venderId);
-
-      if (response && Array.isArray(response.data)) {
-        console.log(response.data, "klhkgkhl");
-
-        navigate("/admin/viewVenders", { state: response.data });
-      } else {
-        toast.error("No user data found");
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("An unknown error occurred");
-      }
-    }
+  const handleLocation = async (bookingId: string | undefined) => {
+    dispatch(bookingAdd({ data: bookingId }));
+    navigate("/vender/managerBookingDetails");
   };
-
   return (
     <div className="mx-5">
       <div className="flex justify-between">
         <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       </div>
-
       <TableContainer component={Paper}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -140,31 +107,19 @@ const Venders: React.FC = () => {
                   page * rowsPerPage + rowsPerPage
                 )
               : filteredRows
-            ).map((row: userDataTypes, index) => (
+            ).map((row: bookingData, index) => (
               <TableRow key={row._id}>
                 <TableCell align="center">{index + 1}</TableCell>
-                <TableCell align="center">{row.username}</TableCell>
-                <TableCell align="center">{row.email}</TableCell>
+                <TableCell align="center">{row.manager.username}</TableCell>
+                <TableCell align="center">{row.name}</TableCell>
                 <TableCell align="center">{row.phone || "no number"}</TableCell>
+                <TableCell align="center">{row.venderData.name}</TableCell>
+                <TableCell align="center">{row.total}</TableCell>
+
                 <TableCell align="center">
-                  {row.isBlocked ? (
-                    <button
-                      className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 me-4 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 "
-                      onClick={() => handleClick(row._id)}
-                    >
-                      unblock
-                    </button>
-                  ) : (
-                    <button
-                      className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2 me-4 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-                      onClick={() => handleClick(row._id)}
-                    >
-                      block
-                    </button>
-                  )}
                   <button
                     className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                    onClick={() => handleVender(row._id)}
+                    onClick={() => handleLocation(row?._id)}
                   >
                     view
                   </button>
@@ -173,7 +128,7 @@ const Venders: React.FC = () => {
             ))}
             {filteredRows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={7} align="center">
                   <Typography variant="h6" color="textSecondary">
                     No Data
                   </Typography>
@@ -200,4 +155,4 @@ const Venders: React.FC = () => {
   );
 };
 
-export default Venders;
+export default ManagerbookingHistory;

@@ -1,6 +1,6 @@
 import { ApiResponse, ApiResponseOfChat, ApiResponseOfMessage, ApiResponseOfWallet, ApiSearchResponse, location, offer, serviceBooking, signupInputs  } from "../../../utils/types";
 import { apiCall } from "./apiCall";
-import { managerUrls } from "../endpoint";
+import { commenUrls, managerUrls } from "../endpoint";
 
 
 
@@ -600,6 +600,52 @@ export const getWallet = (
       const url = `${managerUrls.getWallet}/${userId}`;
 
       apiCall("get", url, null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+
+export const deleteEveryOne = (
+  messageId: string  | undefined,
+
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${commenUrls.deleteForEveryOne}`;
+
+      apiCall("patch", url, {messageId})
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+export const deleteForMe = (
+  messageId: string  | undefined,
+  userId: string | null | undefined,
+
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${commenUrls.deleteForMe}`;
+
+      apiCall("patch", url, {messageId,userId})
         .then((response) => {
           resolve(response);
         })

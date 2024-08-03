@@ -86,8 +86,7 @@ const Conversation:React.FC<chatData> = ({data,showChat}) => {
          
         ):(
           <>
-          {console.log(conversation,'ghjfhgjkh')
-          }
+      
 
           <div
           key={conversation._id}

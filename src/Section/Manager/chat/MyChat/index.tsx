@@ -30,9 +30,7 @@ const MyChat: React.FC<propMychat> = ({showChat}) => {
   const dispatch = useDispatch();
   const { socket } = useSocket();
 
-  const [noOfUnreadMessages, setNoOfUnreadMessages] = useState(0);
   const [open, setOpen] = React.useState(false);
-console.log(noOfUnreadMessages);
 
   const toggleButton = () => {
     setOpen(!open);
@@ -44,8 +42,6 @@ console.log(noOfUnreadMessages);
     getDetails();
   }, [api]);
 
-  const chat = useSelector((state: RootState) => state.chat);
-console.log(chat,"jjj")
  
 
   const getDetails = async () => {
@@ -92,7 +88,6 @@ console.log(chat,"jjj")
       
     try {
       if (!manager.managerId) return;
-      console.log(true,'true');
       
       const response = await postChat(manager.managerId, managerValue._id);
       if (response.status === "success") {
@@ -101,7 +96,6 @@ console.log(chat,"jjj")
 
         
         showChat(true)
-        console.log(true,'true');
         
         socket?.emit("join chat", response.data?._id);
         setSearchResult([])
@@ -115,7 +109,7 @@ console.log(chat,"jjj")
     }
   };
 
-console.log(searchQuery,'hgjfgj');
+
 
 const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const query = e.target.value;
