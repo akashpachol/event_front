@@ -355,7 +355,9 @@ export type message={
   sender: userDataTypes;
   chat:chatType;
   readBy?:userDataTypes,
-  createdAt:string
+  createdAt:string,
+  deleteBy:string,
+  
 }
 
 
@@ -366,4 +368,15 @@ export type chat={
   users?: userDataTypes[];
   messages?: string[];
   groupAdmin?:string;  
+}
+
+
+export type notification={
+  _id?:string
+  receiverId?: string;
+  senderId?: userDataTypes;
+  event?:string;
+  isSeen:boolean;
+  booking?:bookingData[]; 
+  bookingVender?:any; 
 }

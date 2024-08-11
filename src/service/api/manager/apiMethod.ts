@@ -638,7 +638,7 @@ export const deleteEveryOne = (
 
 export const deleteForMe = (
   messageId: string  | undefined,
-  userId: string | null | undefined,
+  userId: string ,
 
 ): Promise<ApiResponse> => {
   return new Promise((resolve, reject) => {
@@ -646,6 +646,30 @@ export const deleteForMe = (
       const url = `${commenUrls.deleteForMe}`;
 
       apiCall("patch", url, {messageId,userId})
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+
+
+export const getNotification = (
+  userId:string
+): Promise<ApiResponseOfMessage> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${commenUrls.getNotifications}/${userId}`;
+
+      apiCall("get", url,null)
         .then((response) => {
           resolve(response);
         })

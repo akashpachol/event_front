@@ -8,6 +8,7 @@ import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' 
 import bookingSlice from '../slice/bookingSlice';
 import chatSlice from '../slice/chatSlice';
+import messageSlice from '../slice/messageSlice';
 
 const rootReducer = combineReducers({
     user: authSlice,
@@ -16,7 +17,8 @@ const rootReducer = combineReducers({
     manager: managerAuthSlice,
     event: eventSlice,
     book:bookingSlice,
-    chat:chatSlice
+    chat:chatSlice,
+    message:messageSlice
 });
 
 const persistConfig = {

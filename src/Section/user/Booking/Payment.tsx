@@ -2,13 +2,15 @@ import React from 'react';
 import { paymentEvent } from '../../../service/api/user/apiMethod';
 import { toast } from 'react-toastify';
 import { NavigateFunction, useLocation, useNavigate } from 'react-router-dom';
+import { useSocket } from '../../../utils/context/SocketContext';
 
 const Payment:React.FC = () => {
     const location = useLocation();
     const receivedData = location.state?.data || [];
     const navigate: NavigateFunction = useNavigate();
+    const {  socket } = useSocket();
 
-    
+
     const handleclick=()=>{
         paymentEvent()
           .then((response) => {
@@ -18,6 +20,8 @@ const Payment:React.FC = () => {
     
               
               toast.success(response.message);
+              socket?.emit('notification',receivedData.manager);
+
               navigate('/bookingHistory')
             } else {
               toast.error(response.message);
@@ -59,17 +63,9 @@ const Payment:React.FC = () => {
             <div className="grid gap-4">
               <div className="flex items-center justify-between">
                 <div className="text-lg font-medium">Subtotal</div>
-                <div className="text-lg font-medium">${receivedData.total}</div>
+                <div className="text-lg font-medium">₹{receivedData.total}</div>
               </div>
-              {/* <div className="flex items-center justify-between">
-                <div className="text-sm font-medium text-muted-foreground">Coupon Code</div>
-                <div className="flex items-center gap-2">
-                  <input type="text" placeholder="Enter coupon code" className="max-w-[150px]" />
-                  <button className=''>
-                    Apply
-                  </button>
-                </div>
-              </div> */}
+        
               <div className="flex items-center justify-between">
                 <div className="text-lg font-medium">Total</div>
                 <div className="text-lg font-medium">₹{receivedData.total}</div>

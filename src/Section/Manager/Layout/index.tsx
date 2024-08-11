@@ -8,7 +8,9 @@ import { Outlet } from 'react-router-dom';
 import { logout } from '../../../utils/redux/slice/Auth/managerAuthSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../utils/redux/app/store';
+import { IoNotifications } from "react-icons/io5";
 import { NavLink } from 'react-router-dom';
+import Notification from './Notification';
 const Layout:React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.manager);
@@ -17,6 +19,11 @@ const Layout:React.FC = () => {
   const navigate: NavigateFunction = useNavigate();
     const [isMaxSidebar, setIsMaxSidebar] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [open, setOpen] = React.useState(false);
+    const toggleDrawer = (open: boolean) => {
+      setOpen(open);
+    };
+
     function toggleSidebar() {
       if (window.innerWidth >= 640) {
         setIsMaxSidebar((prevState) => !prevState);
@@ -89,7 +96,7 @@ const Layout:React.FC = () => {
 
 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
   <p className='me-5 text-2xl text-green-600 cursor-pointer' onClick={()=>   navigate("/manager/chat")}><IoChatbubbleEllipsesOutline /></p>
-      
+  <IoNotifications className='me-5 text-2xl text-green-600 cursor-pointer' onClick={()=>toggleDrawer(true)} />
       {user.managerToken ?(<div className="relative ml-3" ref={dropdownRef}>
                     <div>
                       <button
@@ -147,6 +154,8 @@ const Layout:React.FC = () => {
                   </div>):(<p><Link to={'/login'}>Login</Link> </p>)}
                   
                 </div>
+
+                {open&&(<Notification  toggleDrawer={toggleDrawer}  open={open} />)}
       
       </div>
     </nav>

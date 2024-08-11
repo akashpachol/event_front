@@ -6,14 +6,19 @@ import { Provider } from 'react-redux';
 import {store} from './utils/redux/app/store.ts';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { SocketProvider } from './utils/context/SocketContext.tsx';
+import { WebRTCProvider } from './utils/context/WebrtcContext.ts';
 // import { PersistGate } from 'redux-persist/integration/react'
 ReactDOM.createRoot(document.getElementById('root')!).render(
 
          <Provider store={store}>
               <SocketProvider>
+                <WebRTCProvider>
+
+               
          <GoogleOAuthProvider clientId="793856567539-g571dvb9lv0qv1lh34hhv40ceerqha6d.apps.googleusercontent.com">
         <App />
         </GoogleOAuthProvider>
+        </WebRTCProvider>
         </SocketProvider> 
     </Provider>
 

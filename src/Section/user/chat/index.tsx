@@ -14,18 +14,13 @@ import { extractTime } from "../../../utils/ExtractTime";
 import Picker from "emoji-picker-react";
 import { chatSeen } from "../../../utils/ChatLogic";
 const Chat: React.FC = () => {
-  const [messages, setMessages] = useState<message[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
   const [newMessage, setNewMessage] = useState<string>("");
   const [showPicker, setShowPicker] = useState(false);
   const user = useSelector((state: RootState) => state.user);
   const chat = useSelector((state: RootState) => state.chat);
   const [userSelect, setUserSelect] = useState<userDataTypes |null>(null);
   const [groupSelect, setGroupSelect] = useState<chat |null>(null);
-
-
-
-  const {  socket } = useSocket();
+  const {  socket,setMessages,messages } = useSocket();
 
 
   useEffect(() => {
@@ -47,7 +42,7 @@ const Chat: React.FC = () => {
   useEffect(() => {
 
 
-    socket?.on("receiveMsg", () => {
+    socket?.on("receiveMsg", (message) => {
 
       getDetails();
     });
@@ -56,48 +51,24 @@ const Chat: React.FC = () => {
     };
   }, [socket,messages, setMessages]);
 
-  
-  useEffect(() => {
-    socket?.on("responsedeleteEveryOne", (messageId) => {
-      const updatedMessages = messages.filter(item => item._id != messageId)
-      setMessages(updatedMessages);
-    });
-    return () => {
-      socket?.off("responsedeleteEveryOne");
-    };
-  }, [socket, messages, setMessages]);
-
-
-  useEffect(() => {
-    socket?.on("responseSeen", (MessageData) => {
-
-      setMessages( MessageData);
-    });
-    return () => {
-      socket?.off("responseSeen");
-    };
-  }, [socket,messages, setMessages]);
-
     useEffect(() => {
-if(chat.data?._id){
+
   getDetails();
-}
-     
-         
-    }, [chat.data?._id,newMessage]);
+  socket?.emit("join chat", chat.data?._id);    
+    }, [chat.data?._id]);
 
 
   const getDetails = async () => {
     try {
-  
-
       const response = await getMessage(chat.data?._id, user.userId);
       if (response && Array.isArray(response.data)) {
         setMessages(response.data);
+        console.log('hello');
+        
         socket?.emit('seen',response.data, chat.data?._id);
 
     
-        setLoading(false);
+     
       }
 
     } catch (error: unknown) {
@@ -166,6 +137,7 @@ if(chat.data?._id){
     }
   
 }
+console.log(messages,'ghfgj');
 
 
   return (

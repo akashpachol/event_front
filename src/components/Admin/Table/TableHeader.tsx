@@ -11,9 +11,9 @@ const TableHeader:React.FC<tableHead> = ({heading}) => {
     const color = grey[200];
   return (
    
-    <TableRow>
+    <TableRow sx={{width:'100%'}}>
         {heading.map((value)=>(
-      <TableCell align="center" sx={{ maxWidth: '50px', fontWeight: 'bold', backgroundColor: color, color: 'black' }}>{value}</TableCell>
+      <TableCell align="center" sx={{  fontWeight: 'bold', backgroundColor: color, color: 'black' }}>{value}</TableCell>
 
         ))}
 

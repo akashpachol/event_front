@@ -10,7 +10,6 @@ export const getSender = (loggedUser:string|null|undefined, users:userDataTypes[
 
 
   export const chatSeen = (loggedUser:string|null|undefined, users:string[],readUser:string[]) => {
-    console.log(users,'ll',readUser);
     
 
     if (users.length !== readUser.length) {

@@ -11,6 +11,7 @@ import ScrollableFeed from "react-scrollable-feed";
 import { useSocket } from "../../../utils/context/SocketContext";
 import {
   deleteEveryOne,
+  deleteForMe,
   getMessage,
   postMessage,
 } from "../../../service/api/manager/apiMethod";
@@ -21,13 +22,13 @@ import chatImage from "../../../assets/img/chat.jpg";
 import { chatSeen } from "../../../utils/ChatLogic";
 
 const Chat: React.FC = () => {
-  const [messages, setMessages] = useState<message[]>([]);
+  // const [messages, setMessages] = useState<message[]>([]);
   const [showChat, setShowChat] = useState(false);
-
+  const [api, setApi] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [newMessage, setNewMessage] = useState<string>("");
   const manager = useSelector((state: RootState) => state.manager);
-  const { onlineUsers, socket } = useSocket();
+  const { onlineUsers, socket,setMessages,messages } = useSocket();
   const chat = useSelector((state: RootState) => state.chat);
 
   const userSelect: userDataTypes | undefined = chat.data?.users.find(
@@ -35,7 +36,7 @@ const Chat: React.FC = () => {
   );
 
   useEffect(() => {
-    socket?.on("receiveMsg", () => {
+    socket?.on("receiveMsg", (message) => {
       getDetails();
     });
     return () => {
@@ -43,37 +44,23 @@ const Chat: React.FC = () => {
     };
   }, [socket, messages, setMessages]);
 
-  useEffect(() => {
-    socket?.on("responseSeen", (MessageData) => {
-      setMessages(MessageData);
-    });
-    return () => {
-      socket?.off("responseSeen");
-    };
-  }, [socket, messages, setMessages]);
 
 
-  useEffect(() => {
-    socket?.on("responsedeleteEveryOne", (messageId) => {
-      const updatedMessages = messages.filter(item => item._id != messageId)
-      setMessages(updatedMessages);
-    });
-    return () => {
-      socket?.off("responsedeleteEveryOne");
-    };
-  }, [socket, messages, setMessages]);
+
 
   useEffect(() => {
     getDetails();
     socket?.emit("join chat", chat.data?._id);
-  }, [chat.data?._id]);
+  }, [chat.data?._id, api]);
 
-  const getDetails = async () => {
+   const getDetails = async () => {
     try {
       if (!manager.managerId) return;
 
       const response = await getMessage(chat.data?._id, manager.managerId);
       if (response && Array.isArray(response.data)) {
+        console.log(response.data, "kkkk");
+
         setMessages(response.data);
         socket?.emit("seen", response.data, chat.data?._id);
       }
@@ -121,29 +108,32 @@ const Chat: React.FC = () => {
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
+  const handleMessageForEveryOne = async (id: string) => {
+    try {
+      const response = await deleteEveryOne(id);
+      if (response.status === "success") {
+        socket?.emit("deleteEveryOne", id, chat.data?._id);
 
-  const handleMessageForEveryOne=async(id:string)=>{
-
-      try {
-        const response = await deleteEveryOne(
-      id
-        );
-        if (response.status === "success") {
-
-            socket?.emit("deleteEveryOne",id, chat.data?._id);
-
-      
-          
-        }
-      } catch (error) {
-        const errorMessage = (error as Error).message;
-        toast.error(errorMessage);
+        setApi(!api);
       }
-    
-  }
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      toast.error(errorMessage);
+    }
+  };
 
-
-
+  const handleMessageDeleteForMe = async (id: string) => {
+    try {
+      if (!manager.managerId) return;
+      const response = await deleteForMe(id, manager.managerId);
+      if (response.status === "success") {
+        setApi(!api);
+      }
+    } catch (error) {
+      const errorMessage = (error as Error).message;
+      toast.error(errorMessage);
+    }
+  };
 
   return (
     <div className="flex h-[90vh] max-h-[90vh] gap-5 justify-center">
@@ -151,7 +141,7 @@ const Chat: React.FC = () => {
 
       {showChat ? (
         <div className="relative flex flex-col w-2/4 bg-white overflow-y-auto">
-          <div className="sticky z-20 top-0 p-4 border-b bg-white">
+          <div className=" flex justify-between sticky z-20 top-0 p-4 border-b bg-white">
             {userSelect ? (
               <div className="flex items-center gap-3">
                 <div className="relative">
@@ -176,68 +166,80 @@ const Chat: React.FC = () => {
             ) : (
               ""
             )}
+            <div className="me-10 mt-3">viedo</div>
           </div>
 
           <div className="flex-1 ">
             <div className="  p-4 space-y-4 h-full">
               <div className=" h-full w-full ">
-                <ScrollableFeed>
-                  {messages?.map((value: any) => (
-                    <>
-                      {value.sender._id == manager?.managerId ? (
-                        <div
-                          className={`flex justify-end gap-3 `}
-                          key={value._id}
-                          onClick={() => handleDropdownToggle(value._id)}
-                        >
-                          <div
-                            className={`bg-primary flex justify-between rounded-md p-2 max-w-[80%] my-3  min-w-36 text-primary-foreground text-white  bg-green-300`}
-                          >
-                            <div className="text-sm ">{value.content}</div>
-                            <div className="text-[12px] text-primary-foreground/80 mt-1">
-                              {extractTime(value.createdAt)}
-                              {chatSeen(
-                                manager.managerId,
-                                value.chatId.users,
-                                value.readBy
-                              ) ? (
-                                <span className="text-blue-600">✓✓</span>
-                              ) : (
-                                <span className="text-gray-500">✓✓</span>
-                              )}
-                            </div>
-                          </div>
+              <ScrollableFeed>
+  {messages?.map((value: any) => (
+    < >
+      {
+      console.log('Message:', value)     }
+     
+      {value.sender._id === manager?.managerId ? (
+        value.deletedBy === manager?.managerId ? (
+          ""
+        ) : (
+          <div
+            className={`flex justify-end gap-3`}
+            onClick={() => handleDropdownToggle(value._id)}
+          >
+            <div
+              className={`bg-primary flex justify-between rounded-md p-2 max-w-[80%] my-3 min-w-36 text-primary-foreground text-white bg-green-300`}
+            >
+              <div className="text-sm">{value.content}</div>
+              <div className="text-[12px] text-primary-foreground/80 mt-1">
+                {extractTime(value.createdAt)}
+                {chatSeen(manager.managerId, value.chatId.users, value.readBy) ? (
+                  <span className="text-blue-600">✓✓</span>
+                ) : (
+                  <span className="text-gray-500">✓✓</span>
+                )}
+              </div>
+            </div>
 
-                          {openDropdown === value._id && (
-                            <div
-                              className={`absolute bg-white right-40 mt-10 border rounded shadow-lg transition-opacity duration-700 ease-in-out ${
-                                openDropdown === value._id
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              }`}
-                            >
-                              <ul>
-                                <li className="p-2" onClick={()=>handleMessageForEveryOne(value._id)}>Delete for every one </li>
-                                <li className="p-2">Delete for me</li>
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className={`flex  gap-3 `} key={value._id}>
-                          <div
-                            className={`bg-primary flex justify-between rounded-md p-2 max-w-[80%] my-3  min-w-36 text-primary-foreground bg-gray-200`}
-                          >
-                            <div className="text-sm ">{value.content}</div>
-                            <div className="text-[10px] text-primary-foreground/80 mt-1">
-                              {extractTime(value.createdAt)}
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                    </>
-                  ))}
-                </ScrollableFeed>
+            {openDropdown === value._id && (
+              <div
+                className={`absolute bg-white right-40 mt-10 border rounded shadow-lg transition-opacity duration-700 ease-in-out ${
+                  openDropdown === value._id ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                <ul>
+                  <li
+                    className="p-2"
+                    onClick={() => handleMessageForEveryOne(value._id)}
+                  >
+                    Delete for everyone
+                  </li>
+                  <li
+                    className="p-2"
+                    onClick={() => handleMessageDeleteForMe(value._id)}
+                  >
+                    Delete for me
+                  </li>
+                </ul>
+              </div>
+            )}
+          </div>
+        )
+      ) : (
+        <div className={`flex gap-3`}>
+          <div
+            className={`bg-primary flex justify-between rounded-md p-2 max-w-[80%] my-3 min-w-36 text-primary-foreground bg-gray-200`}
+          >
+            <div className="text-sm">{value.content}</div>
+            <div className="text-[10px] text-primary-foreground/80 mt-1">
+              {extractTime(value.createdAt)}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  ))}
+</ScrollableFeed>
+
               </div>
 
               <div className=" sticky  bottom-4 mx-2   bg-background w-[94%]">

@@ -8,15 +8,17 @@ import {
     TableHead,
     TableRow,
     Paper,
-    TablePagination,
     Typography,
   } from "@mui/material";
-  import { grey } from "@mui/material/colors";
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../utils/redux/app/store';
 import { toast } from 'react-toastify';
 import {  transaction, wallet } from '../../../utils/types';
 import { getWallet } from '../../../service/api/manager/apiMethod';
+import Pagination from '../../../components/Admin/Table/Pagination';
+import TableHeader from '../../../components/Admin/Table/TableHeader';
+import { search } from '../../../utils/SearchLogic';
+import Search from '../../../components/Admin/Table/Search';
 
   const rowsPerPageOptions = [5, 10, 25];
 const Wallet:React.FC = () => {
@@ -24,12 +26,17 @@ const Wallet:React.FC = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [walletData, setWalletData] = useState<wallet|null>(null);
+    const [walletData, setWalletData] = useState<wallet>();
     const [filteredRows, setFilteredRows] =  useState<transaction[]>([]);
-
+    const [heading] = useState([
+      "id",
+     
+      "amount",
+      "Type",
+      "Date",
+    ]);
     const manager = useSelector((state: RootState) => state.manager);
     
-    const color = grey[200];
   
     useEffect(() => {
       getDetails();
@@ -43,7 +50,7 @@ const Wallet:React.FC = () => {
         
         if (response && response.data) {
             if (Array.isArray(response.data.transactions)) {
-                console.log(response.data.transactions );
+             
                 
                 setFilteredRows(response.data.transactions );
               } else {
@@ -54,9 +61,7 @@ const Wallet:React.FC = () => {
             setWalletData(response.data as wallet);
 
         
-        } else {
-          toast.error("No user data found");
-        }
+        } 
       } catch (error: unknown) {
         if (error instanceof Error) {
           toast.error(error.message);
@@ -68,13 +73,8 @@ const Wallet:React.FC = () => {
   
     useEffect(() => {
       const debounce = setTimeout(() => {
-        const filtered = walletData?.transactions.filter((transactionValue) =>
-          Object.values(transactionValue).some(
-            (value) =>
-              value &&
-              value.toString().toLowerCase().includes(searchQuery.toLowerCase())
-          )
-        );
+        if(!walletData)return 
+        const filtered:transaction[]|[] =search(walletData.transactions, searchQuery)??[]
         setFilteredRows(filtered);
       }, 1000);
   
@@ -85,21 +85,15 @@ const Wallet:React.FC = () => {
       setSearchQuery(event.target.value);
     };
   
-    const handleChangePage = ( newPage: number) => {
-      setPage(newPage);
-    };
-  
-    const handleChangeRowsPerPage = (
-      event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
-    };
-  
+
+   
     
-    const emptyRows =
-      rowsPerPage -
-      Math.min(rowsPerPage, filteredRows.length - page * rowsPerPage);
+ 
+   
+    const  emptyRows=rowsPerPage -
+      Math.min(rowsPerPage, filteredRows.length - page * rowsPerPage)
+    
+
   return (
     <div className="h-screen flex flex-col ">
     <div className="flex-grow flex justify-center items-center lg:px-48">
@@ -119,61 +113,15 @@ const Wallet:React.FC = () => {
             <p>View your recent transactions and account activity.</p>
           </div>
           <div className="flex justify-between">
-            <input
-              placeholder="Search"
-              className="border-2 my-6 p-2"
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
+          <Search searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+
           </div>
           <TableContainer component={Paper}>
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  <TableCell
-                    align="center"
-                    sx={{
-                      maxWidth: "50px",
-                      fontWeight: "bold",
-                      backgroundColor: color,
-                      color: "black",
-                    }}
-                  >
-                    ID
-                  </TableCell>
-                  <TableCell
-                    align="center"
-                    sx={{
-                      maxWidth: "150px",
-                      fontWeight: "bold",
-                      backgroundColor: color,
-                      color: "black",
-                    }}
-                  >
-                    amount
-                  </TableCell>
-                  <TableCell
-                    align="center"
-                    sx={{
-                      maxWidth: "150px",
-                      fontWeight: "bold",
-                      backgroundColor: color,
-                      color: "black",
-                    }}
-                  >
-                  Type
-                  </TableCell>
-                  <TableCell
-                    align="center"
-                    sx={{
-                      maxWidth: "50px",
-                      fontWeight: "bold",
-                      backgroundColor: color,
-                      color: "black",
-                    }}
-                  >
-                    Date
-                  </TableCell>
+                <TableHeader heading={heading} />
+
                
                  
                 
@@ -212,15 +160,18 @@ const Wallet:React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={rowsPerPageOptions}
-            component="div"
-            count={filteredRows.length}
-            rowsPerPage={rowsPerPage}
+
+          {filteredRows.length>0?(
+            <Pagination
+            setPage={setPage}
             page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+            rowsPerPage={rowsPerPage}
+            rowsPerPageOptions={rowsPerPageOptions}
+            count={filteredRows.length}
           />
+          ):''}
+          
         </div>
       </div>
     </div>

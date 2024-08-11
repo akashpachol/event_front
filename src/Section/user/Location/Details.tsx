@@ -8,7 +8,7 @@ import {
 } from "../../../utils/types";
 import { getlocationDetails } from "../../../service/api/manager/apiMethod";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { RootState } from "../../../utils/redux/app/store";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";

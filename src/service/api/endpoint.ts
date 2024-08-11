@@ -94,5 +94,6 @@ export const venderUrls = {
 export const commenUrls = {
   deleteForMe: "/message/deleteForMe",
   deleteForEveryOne: "/message/deleteEveryOne",
+  getNotifications:"/notification/getNotifications"
 
 };

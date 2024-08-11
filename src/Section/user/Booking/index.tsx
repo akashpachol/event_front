@@ -24,6 +24,7 @@ const Booking: React.FC = () => {
   const event = useSelector((state: RootState) => state.event);
   const user = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
+console.log(event,'fjdhfkj');
 
   useEffect(() => {
     getDetails();
