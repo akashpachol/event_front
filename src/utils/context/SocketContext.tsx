@@ -13,7 +13,7 @@ interface SocketContextType {
   setMessages:any
 }
 
-const SocketContext = createContext<SocketContextType>({ socket: null,onlineUsers: []});
+const SocketContext = createContext<SocketContextType>({ socket: null,onlineUsers: [],messages:[],setMessages: () => {} });
 
 
 export const useSocket = () => {

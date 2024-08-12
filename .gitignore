@@ -22,3 +22,120 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+
+
+import { useEffect, useRef, useState } from "react";
+import "./VideoPage.css";
+import { useNavigate } from "react-router-dom";
+import socketConnection from "../webrtcUtilities/socketConnection";
+import ActionButtons from "./ActionButtons";
+import { useSelector } from "react-redux";
+import { useWebRTC } from "../redux/context";
+
+const CallerVideo = () => {
+  const remoteFeedEl = useRef(null);
+  const localFeedEl = useRef(null);
+  const navigate = useNavigate();
+  const [offerCreated, setOfferCreated] = useState(false);
+  const videoData = useSelector((state) => state.video);
+  const { peerConnection, remoteStream, localStream, callStatus, offerData } = useWebRTC();
+
+  useEffect(() => {
+    if (!localStream) {
+      navigate(`/`);
+    } else {
+      remoteFeedEl.current.srcObject = remoteStream;
+      localFeedEl.current.srcObject = localStream;
+    }
+  }, [localStream, remoteStream, navigate]);
+
+  useEffect(() => {
+    const shareVideoAsync = async () => {
+
+      if (peerConnection.signalingState === "stable") {
+        try {
+          const offer = await peerConnection.createOffer();
+          await peerConnection.setLocalDescription(offer);
+
+          const socket = socketConnection(videoData.userName);
+          socket.emit("newOffer", offer);
+
+          setOfferCreated(true);
+        } catch (error) {
+          console.error("Error creating or setting offer:", error);
+        }
+      } else {
+        console.warn("Cannot create offer in current signaling state:", peerConnection.signalingState);
+      }
+    };
+
+    if (!offerCreated) {
+      shareVideoAsync();
+    }
+  }, [offerCreated, peerConnection, videoData.userName]);
+
+  useEffect(() => {
+    const addAnswerAsync = async () => {
+  
+      if (peerConnection.signalingState === "have-local-offer") {
+        try {
+          await peerConnection.setRemoteDescription(callStatus.answer);
+        } catch (error) {
+          console.error("Error setting remote description (answer):", error);
+        }
+      } else {
+        console.warn("Cannot set remote description (answer) in current signaling state:", peerConnection.signalingState);
+      }
+    };
+
+    if (callStatus.answer) {
+      addAnswerAsync();
+    }
+  }, [callStatus.answer, peerConnection]);
+
+  const [answerCreated, setAnswerCreated] = useState(false);
+
+  useEffect(() => {
+    const addOfferAndCreateAnswerAsync = async () => {
+
+      if (offerData && peerConnection.signalingState === "stable") {
+        try {
+          await peerConnection.setRemoteDescription(offerData.offer);
+
+          const answer = await peerConnection.createAnswer();
+          await peerConnection.setLocalDescription(answer);
+
+          const copyOfferData = { ...offerData, answer, answerUserName: videoData.userName };
+
+          setAnswerCreated(true);
+
+          const socket = socketConnection(videoData.userName);
+          await socket.emitWithAck("newAnswer", copyOfferData);
+        } catch (error) {
+          console.error("Error setting remote description (offer) or creating answer:", error);
+        }
+      } else {
+        console.warn("Cannot set remote description (offer) or create answer in current signaling state:", peerConnection.signalingState);
+      }
+    };
+
+    if (!answerCreated && offerData) {
+      addOfferAndCreateAnswerAsync();
+    }
+  }, [answerCreated, offerData, peerConnection, videoData.userName]);
+
+  return (
+    <div>
+      <div className="videos">
+        <video id="local-feed" ref={localFeedEl} autoPlay controls playsInline></video>
+        <video id="remote-feed" ref={remoteFeedEl} autoPlay controls playsInline></video>
+      </div>
+
+      <ActionButtons localStream={localStream} />
+    </div>
+  );
+};
+
+export default CallerVideo;

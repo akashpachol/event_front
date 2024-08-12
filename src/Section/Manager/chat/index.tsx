@@ -20,6 +20,7 @@ import { extractTime } from "../../../utils/ExtractTime";
 
 import chatImage from "../../../assets/img/chat.jpg";
 import { chatSeen } from "../../../utils/ChatLogic";
+import Home from "./viedo/Home";
 
 const Chat: React.FC = () => {
   // const [messages, setMessages] = useState<message[]>([]);
@@ -135,6 +136,8 @@ const Chat: React.FC = () => {
     }
   };
 
+
+
   return (
     <div className="flex h-[90vh] max-h-[90vh] gap-5 justify-center">
       <MyChat showChat={setShowChat} />
@@ -166,7 +169,7 @@ const Chat: React.FC = () => {
             ) : (
               ""
             )}
-            <div className="me-10 mt-3">viedo</div>
+            <div className="me-10 "><Home /></div>
           </div>
 
           <div className="flex-1 ">

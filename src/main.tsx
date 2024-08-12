@@ -6,8 +6,7 @@ import { Provider } from 'react-redux';
 import {store} from './utils/redux/app/store.ts';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { SocketProvider } from './utils/context/SocketContext.tsx';
-import { WebRTCProvider } from './utils/context/WebrtcContext.ts';
-// import { PersistGate } from 'redux-persist/integration/react'
+import { WebRTCProvider } from './utils/context/WebrtcContext.tsx';
 ReactDOM.createRoot(document.getElementById('root')!).render(
 
          <Provider store={store}>
