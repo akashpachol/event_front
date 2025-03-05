@@ -3,6 +3,8 @@ import { paymentEvent } from '../../../service/api/user/apiMethod';
 import { toast } from 'react-toastify';
 import { NavigateFunction, useLocation, useNavigate } from 'react-router-dom';
 import { useSocket } from '../../../utils/context/SocketContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../utils/redux/app/store';
 
 const Payment:React.FC = () => {
     const location = useLocation();
@@ -10,6 +12,9 @@ const Payment:React.FC = () => {
     const navigate: NavigateFunction = useNavigate();
     const {  socket } = useSocket();
 
+    const user = useSelector((state: RootState
+
+    ) => state.user);
 
     const handleclick=()=>{
         paymentEvent()
@@ -20,6 +25,7 @@ const Payment:React.FC = () => {
     
               
               toast.success(response.message);
+  
               socket?.emit('notification',receivedData.manager);
 
               navigate('/bookingHistory')

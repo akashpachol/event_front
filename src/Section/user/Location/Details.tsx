@@ -26,7 +26,6 @@ const Details = () => {
   const [data, setData] = useState<eventDataTypes[] | null>(null);
 
   const event = useSelector((state: RootState) => state.event);
-  console.log(event,'aaa')
   const navigate: NavigateFunction = useNavigate();
   const location = useLocation();
   const receivedData = location.state;
@@ -220,12 +219,9 @@ console.log(data,'gjfgjgh')
               )}
             </ul>
           </div>
-        </div>
-      </div>
-
-      <div className="flex  justify-center">
-        <button
-          className="authentication_button w-1/2 mt-5"
+          <div className="flex  justify-center px-20">
+          <button
+          className="authentication_button mt-5"
           onClick={() => {
             navigate("/booking", { state: { type: locationData } });
           }}
@@ -233,6 +229,11 @@ console.log(data,'gjfgjgh')
           book Location
         </button>
       </div>
+       
+        </div>
+      </div>
+
+
     </div>
   );
 };

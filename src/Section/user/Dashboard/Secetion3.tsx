@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { locationData } from "../../../utils/Contents";
 import LocationCard from "../../../components/user/LocationCard";
+import { Link } from "react-router-dom";
+import { getLocation } from "../../../service/api/user/apiMethod";
+import { location } from "../../../utils/types";
+import { toast } from "react-toastify";
 
 const Section3: React.FC = () => {
-  const [startIndex, setStartIndex] = useState<number>(0);
   const [cardsToShow, setCardsToShow] = useState(4);
+  const [location, setLocation] = useState<location[]>([]);
 
   useEffect(() => {
     const updateCardsToShow = () => {
@@ -26,50 +28,37 @@ const Section3: React.FC = () => {
     };
   }, []);
 
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setStartIndex((prevIndex) =>
-        Math.min(prevIndex + 1, locationData.length - cardsToShow)
-      );
-    }, 3000);
+    getDetails();
+  }, []);
 
-    return () => clearInterval(interval);
-  }, [cardsToShow]);
 
-  const handleNext = () => {
-    setStartIndex((prevIndex) =>
-      Math.min(prevIndex + 1, locationData.length - cardsToShow)
-    );
+  const getDetails = async () => {
+    try {
+      const response = await getLocation();
+      if (response && Array.isArray(response.data)) {
+        setLocation(response.data);
+      } else {
+        toast.error("No user data found");
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("An unknown error occurred");
+      }
+    }
   };
-
-  const handlePrev = () => {
-    setStartIndex((prevIndex) => Math.max(prevIndex - 1, 0));
-  };
-
-  const isNextDisabled = startIndex + cardsToShow >= locationData.length;
-  const isPrevDisabled = startIndex === 0;
 
   return (
     <section>
       <h1 className="h1">Recommended Venues</h1>
+      <p className="text-end text-lg text-blue-500"><Link to='/location'>more</Link></p>
       <div className="flex items-center justify-center">
-        <button
-          onClick={handlePrev}
-          className={`px-2 py-1 me-2 rounded-full text-white ${
-            isPrevDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-regal-blue"
-          }`}
-          disabled={isPrevDisabled}
-        >
-          <FaArrowLeft className="text-2xl" />
-        </button>
         <div className="overflow-hidden w-full">
-          <div
-            className="flex transition-transform duration-500 ease-in-out"
-            style={{
-              transform: `translateX(-${startIndex * (100 / cardsToShow)}%)`,
-            }}
-          >
-            {locationData.map((locationCardData) => (
+          <div className="flex transition-transform duration-500 ease-in-out">
+            {location.slice(0,4).map((locationCardData) => (
               <div
                 key={locationCardData.name}
                 style={{ flex: `0 0 ${100 / cardsToShow}%` }}
@@ -79,15 +68,6 @@ const Section3: React.FC = () => {
             ))}
           </div>
         </div>
-        <button
-          onClick={handleNext}
-          className={`px-2 py-1 ms-2 rounded-full text-white ${
-            isNextDisabled ? "bg-gray-400 cursor-not-allowed" : "bg-regal-blue"
-          }`}
-          disabled={isNextDisabled}
-        >
-          <FaArrowRight className="text-2xl" />
-        </button>
       </div>
     </section>
   );

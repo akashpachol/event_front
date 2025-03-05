@@ -4,16 +4,33 @@ import { LayoutGrid } from "./LayoutGrid";
 import { useCallback, useEffect, useState } from "react";
 import {
   ApiResponseLocation,
+  booking,
   eventDataTypes,
   location,
 } from "../../../utils/types";
-import { getlocationDetails } from "../../../service/api/manager/apiMethod";
+import { getlocationBooking, getlocationDetails } from "../../../service/api/manager/apiMethod";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../utils/redux/app/store";
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+
+const localizer = momentLocalizer(moment);
+
+
+
+const timeMapping = {
+  morning: { start: 9, end: 15 },
+  'full Day': { start: 9, end: 22 },
+  evening: { start: 16, end: 22 }
+};
+
 
 const ViewLocation = () => {
   const [locationData, setLocationData] = useState<location | null>(null);
+  const [locationbooking, setLocationbooking] = useState([]);
+
   const [data, setData] = useState<eventDataTypes[] | null>(null);
   const event = useSelector((state: RootState) => state.event);
   const location = useLocation();
@@ -34,7 +51,42 @@ const ViewLocation = () => {
 
   useEffect(() => {
     getDetails();
+
+    if(receivedData){
+      getBooking()
+
+    }
   }, [getDetails]);
+
+
+
+  const getBooking=()=>{
+    getlocationBooking(receivedData)
+    .then((response: ApiResponseLocation) => {
+      if (response && Array.isArray(response.data)) {
+
+        const bookings = response.data.map((item) => {
+          const date = new Date(item.date);
+          const timeRange = timeMapping[item.time] 
+          
+          return {
+            start: new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeRange.start, 0), // Set start time
+            end: new Date(date.getFullYear(), date.getMonth(), date.getDate(), timeRange.end, 0),   // Set end time
+            title:`${item.event.name} in ${item.time}` 
+          };
+        });
+      
+        setLocationbooking(bookings)
+       
+      } else {
+        toast.error("No location data found");
+      }
+    })
+    .catch((error) => {
+      toast.error(error.message);
+    });
+  }
+
 
   const [state, setState] = useState<
     { id: number; thumbnail: string; className: string }[]
@@ -56,13 +108,19 @@ const ViewLocation = () => {
     }
   }, [locationData, event.data]);
 
+
+  const eventPropGetter = () => {
+    const backgroundColor =  "#1DC2AF"; 
+    return { style: { backgroundColor } };
+  };
   return (
     <div className="  py-20  w-full bg-white">
       <div className="h-96">
         <LayoutGrid cards={state} />
       </div>
 
-      <div className="card mt-5 mx-20 px-10 border flex">
+      <div className="card mt-5 mx-20 px-10 border ">
+     
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
           <tbody>
             <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
@@ -137,7 +195,21 @@ const ViewLocation = () => {
             </tr>
           </tbody>
         </table>
+    
       </div>
+
+      <div className="card mt-5 mx-20 ">
+      <Calendar
+     
+    
+        localizer={localizer}
+        events={locationbooking}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+        eventPropGetter={eventPropGetter} 
+      />
+    </div>
     </div>
   );
 };

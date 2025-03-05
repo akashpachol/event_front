@@ -118,6 +118,13 @@ return (
                     {getSender(vender.venderId,conversation.users).username}
                   </h4>
                 </div>
+                <div className="items-center me-3">
+                          {/* {getUnreadmessage(vender.venderId,conversation.messages) > 0 ? (
+                            <span className="  bg-red-600 text-white text-xs  font-bold rounded-full w-7 h-7 flex items-center justify-center">{getUnreadmessage(user.userId,conversation.messages)}</span>
+                          ) : (
+                            ""
+                          )} */}
+                        </div>
               </div>
             </div>
           </Link>

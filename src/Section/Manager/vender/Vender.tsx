@@ -33,7 +33,7 @@ const Venders:React.FC = () => {
   return (
     <div>
  
-            <div className="px-5 bg-gray-100 h-screen  py-12">
+            <div className="px-5 bg-gray-100   py-12">
 
 
             <BentoGrid className=" ">

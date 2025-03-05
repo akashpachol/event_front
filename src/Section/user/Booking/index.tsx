@@ -6,7 +6,7 @@ import Select from 'react-dropdown-select';
 import {  useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../utils/redux/app/store';
-import { bookingEvent, checkAvailability, filterVender } from '../../../service/api/user/apiMethod';
+import { bookingEvent, checkAvailability, checkVenderAvailability, filterVender } from '../../../service/api/user/apiMethod';
 import { toast } from 'react-toastify';
 import { initialValues,validationSchema } from './validation';
 
@@ -17,14 +17,15 @@ const Booking: React.FC = () => {
   const [data, setData] = useState<eventDataTypes[] | null>(null);
   const [availableTimes] = useState<string[]>(['full Day', 'morning', 'evening']);
   const [bookedTimes, setBookedTimes] = useState<string[]>([]);
+
   const location = useLocation();
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+
 
   const receivedData = location.state?.type?.type || [];
   const event = useSelector((state: RootState) => state.event);
   const user = useSelector((state: RootState) => state.user);
   const navigate = useNavigate();
-console.log(event,'fjdhfkj');
 
   useEffect(() => {
     getDetails();
@@ -64,6 +65,7 @@ console.log(event,'fjdhfkj');
 
   const fetchAvailableTimes = async (date: string, locationId: string) => {
     try {
+
       const dateObj = new Date(date);
       const response = await checkAvailability(dateObj, locationId);
       if (response.status === 'success' && Array.isArray(response.data)) {
@@ -72,6 +74,28 @@ console.log(event,'fjdhfkj');
       } else {
         setBookedTimes([]);
       }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+  const fetchAvailableVender= async (date: string) => {
+    try {
+      
+      const dateObj = new Date(date);
+      const response = await checkVenderAvailability(dateObj);
+      if (response.status === 'success' && Array.isArray(response.data)) {
+        if(response.data.length>0){
+          const dataArray = response.data.flatMap(item => item.service.map((serviceItem:{data:string}) => serviceItem.data));
+          setServiceData((prevData: vender[]) => {
+            return prevData.filter((value) => !dataArray.includes(value._id));
+          });
+        }else{
+          getVenderDetails([])
+        }
+   
+      } 
     } catch (error) {
       console.error(error);
     }
@@ -143,8 +167,10 @@ console.log(event,'fjdhfkj');
     const date = e.target.value;
     formik.setFieldValue('date', date);
     fetchAvailableTimes(date, location.state?.type?._id);
+    fetchAvailableVender(date)
   };
   
+console.log(serviceData,'jgjghjhj');
 
   return (
     <div className='min-h-screen '>
@@ -258,6 +284,7 @@ console.log(event,'fjdhfkj');
                 <input
                   id="date"
                   type="date"
+              
                   className="input"
                   placeholder="Enter the date"
                   {...formik.getFieldProps('date')}

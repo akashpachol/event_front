@@ -6,13 +6,13 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { RootState } from '../../../utils/redux/app/store';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { location } from '../../../utils/types';
+import {  vender } from '../../../utils/types';
 import { getAllVenderwithId } from '../../../service/api/vender/apiMethod';
 
 
 const Venders:React.FC=()=> {
     const navigate: NavigateFunction = useNavigate();
-    const [locationData, setLocationData] = useState<location[]>([]);
+    const [venderData, setVenderData] = useState<vender[]>([]);
   const vender = useSelector((state: RootState) => state.vender);
   useEffect(() => {
     getDetails()
@@ -22,7 +22,7 @@ const Venders:React.FC=()=> {
         getAllVenderwithId(vender.venderId)
         .then((response) => {
             if (response && Array.isArray(response.data)) {
-                setLocationData(response.data);
+              setVenderData(response.data);
               
               } else {
                 toast.error("No user data found");
@@ -41,14 +41,9 @@ const Venders:React.FC=()=> {
         <div className='flex justify-end me-16 my-5'><button className='user_button'onClick={()=>navigate('/vender/addvenders')}>Add Vender</button></div>
     <BentoGrid className="w-full px-10">
         
-        {locationData?.map((item, i) => (
+        {venderData?.map((item) => (
           <BentoGridItem
-            key={i}
-            title={item.name}
-            description={item.description}
-            header={item.image}
-         
-            className={ "h-48" }
+          item={item}
           />
         ))}
       </BentoGrid>

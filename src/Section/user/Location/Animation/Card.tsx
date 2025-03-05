@@ -82,7 +82,7 @@ item
           </div>
       </div>
    
-          <div className='flex my-auto  justify-end'>
+          <div className='flex items-center pt-14  justify-end'>
             <button className='authentication_button' onClick={()=>handleView(item._id)}>view</button>
             </div>
 

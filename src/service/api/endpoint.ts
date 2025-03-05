@@ -24,12 +24,14 @@ export const userUrls = {
   bookingCancel: "/booking/bookingCancel", 
   getWallet: "/user/getWallet",
   searchData: "/user/searchData",
+  searchLocationData: "/user/searchLocationData",
   getManger: "/user/manager",
   allChats: "/chat/allChats",
   message:'/message',
   createChat:'/chat',
   getUnreadMessagesFromChat:"/message/getUnreadMessagesFromChat",
-
+  checkVenderAvailability:"/booking/checkVenderAvailability",
+  getFilteredlocation: "/location/getFilteredlocation",
 };
 
 export const adminUrls = {
@@ -47,6 +49,9 @@ export const adminUrls = {
   getVenterType: "/vender/getvendertype",
   verifyVender: "/vender/verifyvender",
   verifyLocation: "/location/verfyLocation",
+  bookingCount:"/booking/bookingCount",
+  getAllManager:"/manager/getAllManager",
+  getAllData:"/admin/getAllData",
 };
 
 export const managerUrls = {
@@ -75,7 +80,10 @@ export const managerUrls = {
    createChat:'/chat',
    getUnreadMessagesFromChat:"/message/getUnreadMessagesFromChat",
    getWallet: "/user/getWallet",
-
+   getLocationBooking:"/booking/getLocationBooking",
+   bookingCount:"/booking/ManagerbookingCount",
+   eventBooking:"/booking/eventBooking",
+   getAllRoleData:"/manager/getAllRoleData",
 };
 
 export const venderUrls = {
@@ -90,10 +98,13 @@ export const venderUrls = {
   message:'/message',
   getMangerBooking:"/booking/getMangerBooking",
   getMangerbookingDetails:"/booking/getMangerbookingDetails",
+  getVenderBooking:"/booking/getVenderBooking",
+  getVenderDetails:"/vender/getVenderDetails"
 };
 export const commenUrls = {
   deleteForMe: "/message/deleteForMe",
   deleteForEveryOne: "/message/deleteEveryOne",
-  getNotifications:"/notification/getNotifications"
+  getNotifications:"/notification/getNotifications",
+  getUnreadNotification:"/notification/getUnreadNotification"
 
 };

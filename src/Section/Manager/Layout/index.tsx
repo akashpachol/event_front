@@ -11,6 +11,8 @@ import { RootState } from '../../../utils/redux/app/store';
 import { IoNotifications } from "react-icons/io5";
 import { NavLink } from 'react-router-dom';
 import Notification from './Notification';
+import { getUnreadNotification } from '../../../service/api/manager/apiMethod';
+import { useSocket } from '../../../utils/context/SocketContext';
 const Layout:React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.manager);
@@ -20,6 +22,11 @@ const Layout:React.FC = () => {
     const [isMaxSidebar, setIsMaxSidebar] = useState(true);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [open, setOpen] = React.useState(false);
+    const [count, setCount] = useState<number>(5);
+    const { socket } = useSocket();
+
+    const manager = useSelector((state: RootState) => state.manager);
+
     const toggleDrawer = (open: boolean) => {
       setOpen(open);
     };
@@ -49,7 +56,25 @@ const Layout:React.FC = () => {
     }
   
   };
+  useEffect(() => {
+    getUreadNotification()
+  
 
+  }, [open]);
+
+  useEffect(() => {
+    console.log("Component mounted");
+
+    socket?.on("responseNotification", () => {
+console.log('dfffdfdf');
+
+      getUreadNotification()
+    });
+
+    return () => {
+      socket?.off("responseNotification");
+    };
+  }, [socket]);
 
 
   useEffect(() => {
@@ -57,12 +82,34 @@ const Layout:React.FC = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
+
   }, []);
 
     const handleSubmit=()=>{
       dispatch(logout());
       navigate('/manager/login')
     }
+
+
+
+
+    const getUreadNotification = async () => {
+      try {
+        if (!manager.managerId) return;
+  
+        const response = await getUnreadNotification(manager.managerId);
+        
+        if (response ) {
+
+  
+          setCount(response.data);
+        }
+      } catch (error: unknown) {
+       console.log('error');
+       
+      }
+    };
+  
   
   return (
     <div className="w-full bg-[#DFF5EB] min-h-screen h-full">
@@ -96,7 +143,17 @@ const Layout:React.FC = () => {
 
 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
   <p className='me-5 text-2xl text-green-600 cursor-pointer' onClick={()=>   navigate("/manager/chat")}><IoChatbubbleEllipsesOutline /></p>
-  <IoNotifications className='me-5 text-2xl text-green-600 cursor-pointer' onClick={()=>toggleDrawer(true)} />
+  <div className="relative ">
+      <IoNotifications
+        className="me-5 text-2xl  text-green-600 cursor-pointer"
+        onClick={() => toggleDrawer(true)}
+      />
+      {count > 0 && (
+        <span className="absolute top-0 right-5 transform translate-x-1/2 -translate-y-1/2 bg-red-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+          {count}
+        </span>
+      )}
+    </div>
       {user.managerToken ?(<div className="relative ml-3" ref={dropdownRef}>
                     <div>
                       <button

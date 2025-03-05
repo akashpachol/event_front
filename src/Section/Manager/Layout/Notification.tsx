@@ -1,5 +1,4 @@
 import Drawer from "@mui/material/Drawer";
-import { MdCancel, MdOutlineEventAvailable } from "react-icons/md";
 import { FaMinusCircle } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -12,22 +11,29 @@ import { useSocket } from "../../../utils/context/SocketContext";
 type ModalProps = {
   open: boolean;
   toggleDrawer: (open: boolean) => void;
+
 };
+export type dataProps={
+  reciver:string,
+  location:string,
+  user:string,
+  status:string
+}
+
 
 const Notification: React.FC<ModalProps> = ({ open, toggleDrawer }) => {
   const [notification, setNotification] = useState<notification[]>([]);
-
   const manager = useSelector((state: RootState) => state.manager);
 
+
   const { socket } = useSocket();
-console.log(socket,'fdjfhjkdhk');
 
   useEffect(() => {
     console.log("Component mounted");
 
-    socket?.on("responseNotification", (id) => {
-      console.log("Received responseNotification:", id);
-      
+    socket?.on("responseNotification", (data) => {
+      console.log("Received responseNotification:", data);
+
       getDetails();
     });
 
@@ -47,7 +53,8 @@ console.log(socket,'fdjfhjkdhk');
       const response = await getNotification(manager.managerId);
       if (response && Array.isArray(response.data)) {
         console.log(response.data, "kkkk");
-
+      
+    
         setNotification(response.data);
       }
     } catch (error: unknown) {
@@ -58,6 +65,7 @@ console.log(socket,'fdjfhjkdhk');
       }
     }
   };
+
 
   return (
     <div>
@@ -78,34 +86,41 @@ console.log(socket,'fdjfhjkdhk');
 
             <div className="space-y-4 max-h-80 overflow-y-auto mt-5">
               {notification.map((value) => (
-                <div
-                  className={`flex items-start gap-3 mb-8 ${
-                    value.isSeen ? "bg-[#DFF5EB]" : "bg-[#33d687]"
-                  } mx-5 py-5`}
-                >
-                  <div className="flex my-auto items-center justify-center rounded-full bg-primary text-primary-foreground">
-                    {value.event == "cancelled" ? (
-                      <MdCancel className="h-8 w-8" />
-                    ) : (
-                      <MdOutlineEventAvailable className="h-8 w-8" />
-                    )}
-                  </div>
-                  <div className="flex-1 space-y-1 ">
-                    <p className="text-sm font-medium">
-                      New Event {value.event}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      You have a new message from Jane Doe.
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      2 minutes ago
-                    </p>
-                  </div>
-                </div>
+
+                <>
+{value.booking?(
+  <div
+  className={`flex items-start gap-3 mb-8 ${
+    value.isSeen ? "bg-[#DFF5EB]" : "bg-[#33d687]"
+  } mx-5 py-5`}
+>
+  <div className="flex my-auto items-center justify-center rounded-full bg-primary text-primary-foreground">
+    {/* {value.event == "cancelled" ? (
+      <MdCancel className="h-8 w-8" />
+    ) : (
+      <MdOutlineEventAvailable className="h-8 w-8" />
+    )} */}
+  </div>
+  <div className="flex-1 space-y-1 ">
+    <p className="text-sm font-medium">
+       Event {value.event}
+    </p>
+    <p className="text-sm text-muted-foreground">
+     {value.senderId.username}  have {value.event=='booked'?'booked new event':'a event cancelled'}  in {value.booking?.locationData.name}.
+    </p>
+    <p className="text-xs text-muted-foreground">
+      {/* 2 minutes ago */}
+    </p>
+  </div>
+</div>
+):('')}
+
+
+                </>
+               
               ))}
             </div>
           </div>
-          0
         </div>
       </Drawer>
     </div>

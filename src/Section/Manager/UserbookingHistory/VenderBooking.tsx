@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../utils/redux/app/store';
 import { useFormik } from "formik";
 import * as Yup from 'yup';
+import { useSocket } from '../../../utils/context/SocketContext';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -32,6 +33,7 @@ const VenderBooking: React.FC = () => {
   const event = useSelector((state: RootState) => state.event);
   const manager = useSelector((state: RootState) => state.manager);
   const navigate: NavigateFunction = useNavigate();
+  const { socket } = useSocket();
 
   useEffect(() => {
     getDetails();
@@ -59,7 +61,6 @@ const VenderBooking: React.FC = () => {
     manager: '',
     vender: '',
   };
-console.log(initialValues,'jhkjghj');
 
   const formik = useFormik({
     initialValues,
@@ -80,6 +81,9 @@ console.log(initialValues,'jhkjghj');
       .then((response) => {
         if (response.status === 'success') {
           toast.success(response.message);
+
+        
+          socket?.emit('notification', venderData?.vender?._id);
           navigate('/manager/UserBookingDetails')
         } else {
           toast.error(response.message);

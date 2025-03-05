@@ -17,6 +17,8 @@ import Wallet from "../../Section/user/Wallet";
 import NotFound from "../../components/NotFound/NotFound";
 import Chat from "../../Section/user/chat";
 import CallerVideo from "../../Section/user/chat/viedo/CallerVideo";
+import VideoChat from "../../Section/user/chat/viedo/Home";
+import VideoCall from "../../Section/user/chat/Viedo/ViedoCall";
 
 const UserRouters = () => {
   return [
@@ -112,9 +114,8 @@ const UserRouters = () => {
         
         },
         {
-          path: "viedoCall",
-          element:(   <CallerVideo />),  
-        
+          path: "/video-call/:roomId/:userId",
+          element: <VideoCall />
         },
       
       ],

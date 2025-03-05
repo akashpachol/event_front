@@ -1,4 +1,4 @@
-import { ApiResponse, eventType, signupInputs, venderType } from "../../../utils/types";
+import { ApiAllDataResponse, ApiResponse, eventType, signupInputs, venderType } from "../../../utils/types";
 import { apiCall } from "./apiCall";
 import { adminUrls } from "../endpoint";
 export const postLogin = (userData: signupInputs): Promise<ApiResponse> => {
@@ -232,6 +232,7 @@ export const refreshAccessToken = (refreshToken:string|null|undefined
   export const verifyLocation = (locationId: string): Promise<ApiResponse> => {
     return new Promise((resolve, reject) => {
       try {
+        
         apiCall("post", adminUrls.verifyLocation, {locationId})
           .then((response) => {
             resolve(response);
@@ -262,3 +263,61 @@ export const refreshAccessToken = (refreshToken:string|null|undefined
     });
   };
 
+
+  export const bookingCount = (year: number): Promise<ApiResponse> => {
+    return new Promise((resolve, reject) => {
+      try {
+        const url = `${adminUrls.bookingCount}/${year}`;
+
+        apiCall("get",url ,null)
+          .then((response) => {
+            resolve(response);
+            console.log(response);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      } catch (error) {
+        resolve({ status: "500", message: "Somethings wrong." });
+      }
+    });
+  };
+
+  export const geAllManager = (): Promise<ApiResponse> => {
+    return new Promise((resolve, reject) => {
+      try {
+        const url = `${adminUrls.getAllManager}`;
+
+        apiCall("get",url ,null)
+          .then((response) => {
+            resolve(response);
+            console.log(response);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      } catch (error) {
+        resolve({ status: "500", message: "Somethings wrong." });
+      }
+    });
+  };
+
+
+  export const getAllData = (): Promise<ApiAllDataResponse> => {
+    return new Promise((resolve, reject) => {
+      try {
+        const url = `${adminUrls.getAllData}`;
+
+        apiCall("get",url ,null)
+          .then((response) => {
+            resolve(response);
+            console.log(response);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      } catch (error) {
+        resolve({ status: "500", message: "Somethings wrong." });
+      }
+    });
+  };

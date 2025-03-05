@@ -218,7 +218,7 @@ const Navbar: React.FC = () => {
           </div>
         </div>
       </nav>
-      <div className="bg-gray-100  mt-5">
+      <div className="bg-gray-100 h-full mt-5">
         <Outlet />
       </div>
     </div>

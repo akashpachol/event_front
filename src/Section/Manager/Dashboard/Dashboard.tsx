@@ -1,6 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import ApexChart from '../../../components/manager/ApexChart';
+import Donut from '../../../components/manager/Donut';
+import { ApiAllData } from '../../../utils/types';
+import { getAllRoleData } from '../../../service/api/manager/apiMethod';
+import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../utils/redux/app/store';
 
 const Dashboard:React.FC = () => {
+
+    const [allDetails,setAllDetails]=useState<ApiAllData|null>(null)
+
+    const manager = useSelector((state: RootState) => state.manager);
+
+    useEffect(() => {
+      
+          getDetails();
+        
+      }, []);
+    
+      const getDetails = () => {
+        if(!manager.managerId)
+            return
+
+        getAllRoleData(manager.managerId)
+          .then((response) => {
+    console.log(response,'resp');
+    
+            if (response.data) {
+                setAllDetails(response.data as ApiAllData);
+            } else {
+              toast.error("No location data found");
+            }
+          })
+          .catch((error) => {
+            toast.error(error.message);
+          });
+      };
+
   return (
     <div>   
     <div className="flex flex-col  items-center  pt-4 w-full">
@@ -28,7 +65,7 @@ const Dashboard:React.FC = () => {
                       </div>
                       <div className="h-50 ml-4 flex w-auto flex-col justify-center">
                       <p className="font-dm text-sm font-medium text-gray-600">Total Sales</p>
-                      <h4 className="text-xl font-bold text-navy-700 dark:text-white">$5000 </h4>
+                      <h4 className="text-xl font-bold text-navy-700 dark:text-white">₹{allDetails?.sales} </h4>
                       </div>
                   </div>
                   <div className="relative flex flex-grow flex-row  items-center rounded-[10px]  border-[1px] border-gray-200 bg-white bg-clip-border shadow-md shadow-[#F3F3F3] dark:border-[#ffffff33] dark:!bg-navy-800 dark:text-white dark:shadow-none">
@@ -54,7 +91,7 @@ const Dashboard:React.FC = () => {
                       </div>
                       <div className="h-50 ml-4 flex w-auto flex-col justify-center">
                       <p className="font-dm text-sm font-medium text-gray-600">Total Hotels</p>
-                      <h4 className="text-xl font-bold text-navy-700 dark:text-white">50</h4>
+                      <h4 className="text-xl font-bold text-navy-700 dark:text-white">{allDetails?.hotels}</h4>
                       </div>
                   </div>
                   <div className="relative flex flex-grow  items-center  border-[1px] border-gray-200 bg-white bg-clip-border shadow-md shadow-[#F3F3F3] dark:border-[#ffffff33] dark:!bg-navy-800 dark:text-white dark:shadow-none">
@@ -79,7 +116,7 @@ const Dashboard:React.FC = () => {
                       </div>
                       <div className="h-50 ml-4 flex w-auto flex-col justify-center">
                       <p className="font-dm text-sm font-medium text-gray-600">Total Booking</p>
-                      <h4 className="text-xl font-bold text-navy-700 dark:text-white">30</h4>
+                      <h4 className="text-xl font-bold text-navy-700 dark:text-white">{allDetails?.booking}</h4>
                       </div>
                   </div>
           
@@ -88,6 +125,23 @@ const Dashboard:React.FC = () => {
       </div>
     
     </div>
+    <div className=" lg:flex mx-12 ">
+    <div className="my-10 mx-8 bg-white w-1/2 ">
+        <ApexChart />
+
+        </div>
+    <div className="my-10 mx-8 bg-white w-1/2 ">
+
+
+<Donut />
+
+
+
+
+    </div>
+    </div>
+
+
     </div>
   );
 }

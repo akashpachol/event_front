@@ -84,6 +84,17 @@ export type signupInputs = {
    
   }
 
+  export type ApiAllDataResponse={
+    status: string;
+    message: string;
+  
+    data?:ApiAllData;
+   
+  }
+  export type ApiAllData={user?:number,manager?:number,vender?:number,hotels:number,sales:number,booking:number};
+   
+  
+
 
   export type ApiError = {
     response: {
@@ -126,7 +137,7 @@ export type signupInputs = {
     phone?: string|undefined,
     image?:string| undefined,
     createdAt?:string,
-    updatedAt?:string,
+    updatedAt?:Date,
     isBlocked?:boolean,
     refreshToken?:string,
     refreshTokenExpiresAt?:string
@@ -305,13 +316,10 @@ export type ApiResponseOfChat={
   
 }
 
-export type ApiResponseOfMessage={
+export type ApiResponseOfNotification={
   status: string;
   message: string;
-
-  data?:message
- 
-  
+  data?:number
 }
 
 
@@ -338,9 +346,9 @@ export type transaction={
 export type chatType={
   _id?:string
   chatName: string;
-  users: userDataTypes[];
+  users: userDataTypes[]|string[];
   isGroupChat:boolean;
-  messages?:any 
+  messages?:message 
   groupAdmin?:string;  
 }
 
@@ -350,23 +358,29 @@ data:chat |null,
 }
 
 export type message={
-  _id?:string
+  _id:string
   content: string;
   sender: userDataTypes;
-  chat:chatType;
-  readBy?:userDataTypes,
+  chatId:chatType;
+  readBy:string[],
   createdAt:string,
-  deleteBy:string,
+  deletedBy:string,
   
+}
+
+export type ApiResponseOfMessage={
+  status: string;
+  message: string;
+  data?:message[]
 }
 
 
 export type chat={
-  _id?:string
-  chatName?: string;
-  isGroupChat?: boolean;
-  users?: userDataTypes[];
-  messages?: string[];
+  _id:string
+  chatName: string;
+  isGroupChat: boolean;
+  users: userDataTypes[];
+  messages:message[];
   groupAdmin?:string;  
 }
 
@@ -379,4 +393,34 @@ export type notification={
   isSeen:boolean;
   booking?:bookingData[]; 
   bookingVender?:any; 
+}
+
+export type ApiResponseOfNotitfication={
+  status: string;
+  message: string;
+  data?:notification[]
+}
+
+
+export type bookingVenderData={
+  _id: string;
+  name:string,
+  event:eventDataTypes,
+  count:string,
+  date:string,
+  total:number,
+
+
+  manager:userDataTypes,
+  vender:userDataTypes,
+  venderData:vender,
+  status:string
+ }
+
+ export type ApiBookingVenderDataResponse={
+  status: string;
+  message: string;
+
+  data?:bookingVenderData;
+ 
 }

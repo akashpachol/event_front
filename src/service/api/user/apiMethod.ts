@@ -1,4 +1,4 @@
-import { ApiResponse,  ApiResponseOfChat,  ApiResponseOfMessage,  ApiResponseOfWallet,  booking,  signupInputs } from "../../../utils/types";
+import { ApiResponse,  ApiResponseLocation,  ApiResponseOfChat,  ApiResponseOfMessage,  ApiResponseOfWallet,  booking,  signupInputs } from "../../../utils/types";
 import { apiCall } from "./apiCall";
 import { commenUrls, userUrls } from "../endpoint";
 import { formatISO } from 'date-fns';
@@ -529,3 +529,68 @@ export const deleteForMe = (
     }
   });
 };
+
+
+export const checkVenderAvailability = (
+date:Date
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${userUrls.checkVenderAvailability}/${date}`;
+
+      apiCall("get", url,null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+export const getFilteredLocation = (
+  data:any
+  ): Promise<ApiResponse> => {
+    return new Promise((resolve, reject) => {
+      try {
+        const url = `${userUrls.getFilteredlocation}`;
+  
+        apiCall("post", url,{data})
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      } catch (error) {
+        resolve({ status: "500", message: "Something wrong" });
+      }
+    });
+  };
+
+
+  
+export const getSearchLocationData = (
+  value:string|undefined
+  ): Promise<ApiResponseLocation> => {
+    return new Promise((resolve, reject) => {
+      try {
+       
+        const url = `${userUrls.searchLocationData}?data=${value}`;
+  
+        apiCall("get", url,null)
+          .then((response) => {
+            resolve(response);
+          })
+          .catch((err) => {
+            reject(err);
+          });
+      } catch (error) {
+        resolve({ status: "500", message: "Something wrong" });
+      }
+    });
+  };

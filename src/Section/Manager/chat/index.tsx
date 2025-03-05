@@ -5,7 +5,7 @@ import MyChat from "./MyChat";
 import { RootState } from "../../../utils/redux/app/store";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { message, userDataTypes } from "../../../utils/types";
+import {  chat, message, userDataTypes } from "../../../utils/types";
 import ScrollableFeed from "react-scrollable-feed";
 
 import { useSocket } from "../../../utils/context/SocketContext";
@@ -15,12 +15,13 @@ import {
   getMessage,
   postMessage,
 } from "../../../service/api/manager/apiMethod";
-import Picker from "emoji-picker-react";
+import Picker, { EmojiClickData } from "emoji-picker-react";
 import { extractTime } from "../../../utils/ExtractTime";
 
-import chatImage from "../../../assets/img/chat.jpg";
+import chatImage from "../../../assets/img/chatimg.avif";
 import { chatSeen } from "../../../utils/ChatLogic";
-import Home from "./viedo/Home";
+import Viedo from "./Viedo";
+
 
 const Chat: React.FC = () => {
   // const [messages, setMessages] = useState<message[]>([]);
@@ -31,13 +32,30 @@ const Chat: React.FC = () => {
   const manager = useSelector((state: RootState) => state.manager);
   const { onlineUsers, socket,setMessages,messages } = useSocket();
   const chat = useSelector((state: RootState) => state.chat);
-
-  const userSelect: userDataTypes | undefined = chat.data?.users.find(
-    (user) => user._id !== manager.managerId
-  );
+  const [userSelect, setUserSelect] = useState<userDataTypes | null>(null);
+  const [groupSelect, setGroupSelect] = useState<chat | null>(null);
 
   useEffect(() => {
-    socket?.on("receiveMsg", (message) => {
+    if (chat.data) {
+      if (chat.data.chatName == "") {
+        setGroupSelect(null);
+        const selectedUser = chat.data.users?.find(
+          (userData) => userData._id !== manager.managerId
+        );
+        if (selectedUser) {
+          setUserSelect(selectedUser);
+        } else {
+          setUserSelect(null);
+        }
+      } else {
+        setUserSelect(null);
+        setGroupSelect(chat.data);
+      }
+    }
+  }, [chat, manager.managerId]);
+
+  useEffect(() => {
+    socket?.on("receiveMsg", () => {
       getDetails();
     });
     return () => {
@@ -53,6 +71,7 @@ const Chat: React.FC = () => {
     getDetails();
     socket?.emit("join chat", chat.data?._id);
   }, [chat.data?._id, api]);
+
 
    const getDetails = async () => {
     try {
@@ -98,14 +117,15 @@ const Chat: React.FC = () => {
     }
   };
 
-  const onEmojiClick = (emojiObject: any) => {
+  const onEmojiClick = (emojiObject: EmojiClickData) => {
     setNewMessage((prevInput) => prevInput + emojiObject.emoji);
     setShowPicker(false);
   };
 
-  const [openDropdown, setOpenDropdown] = useState(null);
+  const [openDropdown, setOpenDropdown] = useState<string|null>(null);
 
-  const handleDropdownToggle = (id) => {
+
+  const handleDropdownToggle = (id:string|null) => {
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
@@ -143,7 +163,7 @@ const Chat: React.FC = () => {
       <MyChat showChat={setShowChat} />
 
       {showChat ? (
-        <div className="relative flex flex-col w-2/4 bg-white overflow-y-auto">
+        <div className="relative flex flex-col w-3/4 bg-white overflow-y-auto">
           <div className=" flex justify-between sticky z-20 top-0 p-4 border-b bg-white">
             {userSelect ? (
               <div className="flex items-center gap-3">
@@ -167,16 +187,30 @@ const Chat: React.FC = () => {
                 <div className="text-sm font-medium">{userSelect.username}</div>
               </div>
             ) : (
-              ""
+              <div className="flex items-center gap-3">
+              <div className="relative">
+                <img
+                  className="w-10 h-10 rounded-full"
+                  src={`https://img.freepik.com/premium-vector/young-smiling-man-avatar-man-with-brown-beard-mustache-hair-wearing-yellow-sweater-sweatshirt-3d-vector-people-character-illustration-cartoon-minimal-style_365941-860.jpg`}
+                  alt=""
+                />
+              </div>
+
+              <div className="text-sm font-medium">
+                {groupSelect?.chatName}
+              </div>
+            </div>
             )}
-            <div className="me-10 "><Home /></div>
+
+<div className="me-10 mt-3"><Viedo /></div>
+
           </div>
 
           <div className="flex-1 ">
             <div className="  p-4 space-y-4 h-full">
               <div className=" h-full w-full ">
               <ScrollableFeed>
-  {messages?.map((value: any) => (
+  {messages?.map((value: message) => (
     < >
       {
       console.log('Message:', value)     }

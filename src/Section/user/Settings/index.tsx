@@ -63,7 +63,7 @@ const getCroppedFile = (croppedData: string) => {
   editProfileImg(user.userId,croppedData)
   .then((response:object) => {
 console.log(response,"kjhfdkfdkj");
-
+setApi(!api)
   })
   .catch((error) => {
     toast.error(error?.message);
@@ -90,10 +90,10 @@ const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
 
   return (
-    <div className="h-screen flex flex-col ">
-      <div className="flex-grow flex justify-center items-center lg:px-48">
+  
+      <div className="flex-grow flex justify-center items-center min-h-screen px-14">
       <Sidebar />
-        <div className="sm:w-2/3 w-96 ">
+        <div className="sm:w-2/3  ">
         <div
   className="w-full  pt-5 border-2"
   style={{ background: 'linear-gradient(to right, rgb(165 243 255), rgb(224 252 255 / 26%))' }}
@@ -218,7 +218,7 @@ const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
         </div>
       </div>
-    </div>
+ 
   );
 };
 

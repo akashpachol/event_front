@@ -41,19 +41,24 @@ const BookingHistory: React.FC = () => {
   return (
 
 
-    <div className="h-screen flex flex-col ">
-    <div className="flex-grow flex justify-center items-center lg:px-48">
+  
+    <div className="flex-grow flex justify-center items-center lg:px-10">
     <Sidebar />
-      <div className="sm:w-2/3  ">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6  py-8 bg-white min-h-screen">
+      <div className="w-2/3 b ">
+      <div className="   sm:px-6  py-8 bg-white min-h-screen">
       <h1 className="text-3xl font-bold mb-6">Booking History</h1>
       <div className="grid grid-cols-2 gap-6">
         {bookingData?.map((booking) => (
           <div
             key={booking._id}
-            className="bg-white shadow-md rounded-lg overflow-hidden"
+            className="bg-white shadow-md rounded-lg overflow-hidden flex flex-col justify-center"
           >
-            <div className="px-6 py-4">
+            <div className=" mx-auto">
+            <img src={booking.event.image} className="w-36" alt="" />
+
+            </div>
+            <div className="px-6 py-4 ">
+
               <h2 className="text-xl font-bold mb-2">{booking.name}</h2>
               <div className="flex items-center space-x-4 mb-4">
                 <div className="flex items-center space-x-2">
@@ -91,7 +96,7 @@ const BookingHistory: React.FC = () => {
 
       </div>
     </div>
-  </div>
+
    
   );
 };

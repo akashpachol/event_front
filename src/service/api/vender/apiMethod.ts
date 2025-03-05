@@ -1,6 +1,6 @@
-import { ApiResponse, ApiResponseOfChat, ApiResponseOfMessage, location, signupInputs,  } from "../../../utils/types";
+import { ApiBookingVenderDataResponse, ApiResponse, ApiResponseOfChat, ApiResponseOfMessage, ApiResponseOfNotification, location, signupInputs,  } from "../../../utils/types";
 import { apiCall } from "./apiCall";
-import { venderUrls } from "../endpoint";
+import { commenUrls, venderUrls } from "../endpoint";
 
 
   export const getAllVenderwithId = (venderId:string|undefined|null
@@ -263,13 +263,124 @@ export const getManagerBookingHistory = (
 
 export const getManagerBookingDetails = (
   bookingId: string | null | undefined
-): Promise<ApiResponse> => {
+): Promise<ApiBookingVenderDataResponse> => {
   return new Promise((resolve, reject) => {
     try {
       const url = `${venderUrls.getMangerbookingDetails}/${bookingId}`;
 
 
       apiCall("get", url, null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+export const getVenderBooking = (id:string|null|undefined
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${venderUrls.getVenderBooking}/${id}`;
+
+
+      apiCall("get", url, null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+export const getVenderDetails = (id:string|null|undefined
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${venderUrls.getVenderDetails}/${id}`;
+
+
+      apiCall("get", url, null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+export const getUnreadNotification = (
+  userId:string
+): Promise<ApiResponseOfNotification> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${commenUrls.getUnreadNotification}/${userId}`;
+
+      apiCall("get", url,null)
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+
+
+export const deleteEveryOne = (
+  messageId: string  | undefined,
+
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${commenUrls.deleteForEveryOne}`;
+
+      apiCall("patch", url, {messageId})
+        .then((response) => {
+          resolve(response);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    } catch (error) {
+      resolve({ status: "500", message: "Something wrong" });
+    }
+  });
+};
+
+export const deleteForMe = (
+  messageId: string  | undefined,
+  userId: string | null | undefined,
+
+): Promise<ApiResponse> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const url = `${commenUrls.deleteForMe}`;
+
+      apiCall("patch", url, {messageId,userId})
         .then((response) => {
           resolve(response);
         })

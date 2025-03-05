@@ -41,7 +41,7 @@ const Wallet:React.FC = () => {
         
         if (response && response.data) {
             if (Array.isArray(response.data.transactions)) {
-                console.log(response.data.transactions );
+                console.log(response.data.transactions,'kkkkk' );
                 
                 setFilteredRows(response.data.transactions );
               } else {
@@ -52,9 +52,7 @@ const Wallet:React.FC = () => {
             setWalletData(response.data as wallet);
 
         
-        } else {
-          toast.error("No user data found");
-        }
+        } 
       } catch (error: unknown) {
         if (error instanceof Error) {
           toast.error(error.message);
@@ -93,14 +91,14 @@ const Wallet:React.FC = () => {
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(0);
     };
-  
-    
-    const emptyRows =
-      rowsPerPage -
-      Math.min(rowsPerPage, filteredRows.length - page * rowsPerPage);
+    let emptyRows ;
+    if(filteredRows){
+     emptyRows = rowsPerPage -Math.min(rowsPerPage, filteredRows.length - page * rowsPerPage);
+    }
+   
   return (
-    <div className="h-screen flex flex-col ">
-    <div className="flex-grow flex justify-center items-center lg:px-48">
+  
+    <div className="flex-grow flex justify-center items-center    min-h-screen px-14">
     <Sidebar />
     <div className="grid gap-6 items-start max-w-6xl px-4 mx-auto py-6 bg-white w-2/3">
       <div className="grid gap-4">
@@ -178,30 +176,29 @@ const Wallet:React.FC = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {(rowsPerPage > 0
-                  ? filteredRows.slice(
-                      page * rowsPerPage,
-                      page * rowsPerPage + rowsPerPage
-                    )
-                  : filteredRows
-                ).map((row: transaction, index) =>  (
-                    <TableRow key={row._id}>
-                      <TableCell align="center">{index + 1}</TableCell>
-                      <TableCell align="center">{row.amount}</TableCell>
-                      <TableCell align="center">{row.type}</TableCell>
-                      <TableCell align="center">{new Date(row.date).toLocaleDateString()}</TableCell>
-                  
-                    </TableRow>
-                  ))}
-                {filteredRows.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={7} align="center">
-                      <Typography variant="h6" color="textSecondary">
-                        No Data
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                )}
+              {filteredRows && filteredRows.length > 0 ? (
+  (rowsPerPage > 0 
+    ? filteredRows.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+      )
+    : filteredRows
+  ).map((row: transaction, index) => (
+    <TableRow key={row._id}>
+      <TableCell align="center">{index + 1}</TableCell>
+      <TableCell align="center">{row.amount}</TableCell>
+      <TableCell align="center">{row.type}</TableCell>
+      <TableCell align="center">{new Date(row.date).toLocaleDateString()}</TableCell>
+    </TableRow>
+  ))
+) : (
+  <TableRow>
+    <TableCell align="center" colSpan={4}>
+      No data available
+    </TableCell>
+  </TableRow>
+)}
+           
                 {emptyRows > 0 && filteredRows.length !== 0 && (
                   <TableRow style={{ height: 53 * emptyRows }}>
                     <TableCell colSpan={5} />
@@ -210,7 +207,8 @@ const Wallet:React.FC = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
+          {filteredRows && filteredRows.length > 0 ?
+          (<TablePagination
             rowsPerPageOptions={rowsPerPageOptions}
             component="div"
             count={filteredRows.length}
@@ -218,12 +216,12 @@ const Wallet:React.FC = () => {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-          />
+          />):''}
         </div>
       </div>
     </div>
     </div>
-  </div>
+
   );
 }
 

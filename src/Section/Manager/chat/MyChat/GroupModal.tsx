@@ -41,7 +41,7 @@ export type CancelModalProps = {
   open: boolean;
   toggleButton: () => void;
   setApi:React.Dispatch<React.SetStateAction<boolean>>;
-  api:string
+  api:boolean
 };
 
 const GroupModal: React.FC<CancelModalProps> = ({api,setApi, toggleButton, open }) => {

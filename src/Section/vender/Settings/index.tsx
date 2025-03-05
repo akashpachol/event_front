@@ -61,7 +61,7 @@ const getDetails=()=>{
   
     editProfileImg(vender.venderId,croppedData)
     .then((response:object) => {
-  console.log(response,"kjhfdkfdkj");
+  console.log(response);
   setApi(!api)
     })
     .catch((error) => {

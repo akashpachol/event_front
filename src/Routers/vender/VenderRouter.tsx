@@ -13,6 +13,8 @@ import NotFound from "../../components/NotFound/NotFound";
 import Chat from "../../Section/vender/chat";
 import ManagerbookingHistory from "../../Section/vender/MangerbookingHistory";
 import ManagerBookingDetails from "../../Section/vender/MangerbookingHistory/MangerBookingDetails";
+import ViewVender from "../../Section/vender/Venders/ViewVender";
+import VideoCall from "../../Section/vender/chat/Viedo/ViedoCall";
 
 const VenderRouter = () => {
   return [
@@ -59,6 +61,10 @@ const VenderRouter = () => {
           path: "venders",
           element: <Venders />,
         },
+        {
+          path: "viewVender",
+          element: <ViewVender />,
+        },
 
         {
           path: "managerbookingHistory",
@@ -80,6 +86,10 @@ const VenderRouter = () => {
           path: "chat",
           element:(   <VenderAuth><Chat /></VenderAuth>),  
         
+        },
+        {
+          path: "video-call/:roomId/:userId",
+          element: <VideoCall />
         },
       ],
     },

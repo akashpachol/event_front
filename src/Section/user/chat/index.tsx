@@ -10,14 +10,16 @@ import {
 import { RootState } from "../../../utils/redux/app/store";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { chat, userDataTypes } from "../../../utils/types";
+import { chat, message, userDataTypes } from "../../../utils/types";
 import ScrollableFeed from "react-scrollable-feed";
 
 import { useSocket } from "../../../utils/context/SocketContext";
 import { extractTime } from "../../../utils/ExtractTime";
-import Picker from "emoji-picker-react";
+import Picker, { EmojiClickData } from "emoji-picker-react";
 import { chatSeen } from "../../../utils/ChatLogic";
-import Home from "./viedo/Home";
+import chatImage from "../../../assets/img/chatimg.avif";
+
+import Viedo from "./Viedo";
 const Chat: React.FC = () => {
   const [newMessage, setNewMessage] = useState<string>("");
   const [showPicker, setShowPicker] = useState(false);
@@ -25,8 +27,8 @@ const Chat: React.FC = () => {
   const chat = useSelector((state: RootState) => state.chat);
   const [userSelect, setUserSelect] = useState<userDataTypes | null>(null);
   const [groupSelect, setGroupSelect] = useState<chat | null>(null);
+  const [showChat, setShowChat] = useState(false);
   const { socket, setMessages, messages } = useSocket();
-
   useEffect(() => {
     if (chat.data) {
       if (chat.data.chatName == "") {
@@ -46,7 +48,7 @@ const Chat: React.FC = () => {
     }
   }, [chat, user.userId]);
   useEffect(() => {
-    socket?.on("receiveMsg", (message) => {
+    socket?.on("receiveMsg", () => {
       getDetails();
     });
     return () => {
@@ -64,7 +66,7 @@ const Chat: React.FC = () => {
       const response = await getMessage(chat.data?._id, user.userId);
       if (response && Array.isArray(response.data)) {
         setMessages(response.data);
-
+   
         socket?.emit("seen", response.data, chat.data?._id);
       }
     } catch (error: unknown) {
@@ -97,13 +99,13 @@ const Chat: React.FC = () => {
     }
   };
 
-  const onEmojiClick = (emojiObject: any) => {
+  const onEmojiClick = (emojiObject:EmojiClickData) => {
     setNewMessage((prevInput) => prevInput + emojiObject.emoji);
     setShowPicker(false);
   };
-  const [openDropdown, setOpenDropdown] = useState(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  const handleDropdownToggle = (id) => {
+  const handleDropdownToggle = (id: string | null) => {
     setOpenDropdown(openDropdown === id ? null : id);
   };
 
@@ -119,11 +121,13 @@ const Chat: React.FC = () => {
     }
   };
 
-  return (
-    <div className="flex h-[90vh] max-h-[90vh] gap-5 justify-center">
-      <MyChat />
 
-      <div className="relative flex flex-col w-2/4 bg-white overflow-y-auto">
+ 
+
+  return (
+    <div className="flex h-[90vh] max-h-[90vh] gap-5 justify-center mx-6">
+      <MyChat  showChat={setShowChat} />
+      {showChat ?(   <div className="relative flex flex-col w-3/4 bg-white overflow-y-auto ">
         <div className="sticky flex justify-between z-20 top-0 p-4 border-b bg-white">
           {userSelect ? (
             <>
@@ -157,7 +161,7 @@ const Chat: React.FC = () => {
             </div>
           )}
 
-<div className="me-10 mt-3"><Home /></div>
+<div className="me-10 mt-3"><Viedo /></div>
 
         </div>
 
@@ -165,7 +169,7 @@ const Chat: React.FC = () => {
           <div className="  p-4 space-y-4 h-full">
             <div className=" h-full w-full ">
               <ScrollableFeed>
-                {messages?.map((value: any) => (
+                {messages?.map((value: message) => (
                   <>
                     {value.sender._id === user?.userId ? (
                       <div
@@ -174,7 +178,7 @@ const Chat: React.FC = () => {
                         onClick={() => handleDropdownToggle(value._id)}
                       >
                         <div
-                          className={`bg-primary flex justify-between rounded-md p-2 max-w-[80%] my-3  min-w-36 text-primary-foreground text-white  bg-blue-500`}
+                          className={`bg-primary flex justify-between rounded-md p-2 max-w-[80%] my-3  min-w-36 text-primary-foreground text-white   bg-green-300`}
                         >
                           <div className="text-sm ">{value.content}</div>
                           <div className="text-[10px] text-primary-foreground/80 mt-1">
@@ -184,7 +188,7 @@ const Chat: React.FC = () => {
                               value.chatId.users,
                               value.readBy
                             ) ? (
-                              <span className="text-blue-600">✓✓</span>
+                              <span className="text-blue-500">✓✓</span>
                             ) : (
                               <span className="text-gray-500">✓✓</span>
                             )}
@@ -255,7 +259,26 @@ const Chat: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div>):(
+         <div className="flex bg-white h-full w-3/4  items-center justify-center">
+         <div className="grid gap-4 text-center">
+           <img
+             src={chatImage}
+             alt="Get to messaging"
+             width={400}
+             height={400}
+             className="mx-auto"
+           />
+           <div className="text-2xl font-semibold text-white">
+             Get to messaging
+           </div>
+           <div className="text-muted-foreground">
+             Select a conversation to start chatting.
+           </div>
+         </div>
+       </div>
+      )}
+   
     </div>
   );
 };

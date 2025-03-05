@@ -8,11 +8,14 @@ import { toast } from "react-toastify";
 import { ApiResponseOfBooking, bookingData } from "../../../utils/types";
 
 import CancelModal from "./CancelModal";
+import { RootState } from "../../../utils/redux/app/store";
+import { useSelector } from "react-redux";
 
 const BookingDeatails: React.FC = () => {
   const [bookingData, setBookingData] = useState<bookingData | null>(null);
   const [api, setApi] = useState(false);
   const [open, setOpen] = React.useState(false);
+  const user = useSelector((state: RootState) => state.user);
 
   const location = useLocation();
   const receivedData = location.state;
@@ -50,19 +53,24 @@ const BookingDeatails: React.FC = () => {
     return dayDifference > 2;
   };
 
-  console.log(bookingData?.event.name);
+  let data={
+    reciver:bookingData?.manager._id,
+    location:bookingData?.locationData.name,
+      user:user.user,
+      status:'cancel',
+      mode:'manager'
+  }
 
   return (
     <div className="flex flex-col min-h-screen mx-24 ">
       <div className=" bg-gray-50 py-12">
         <header className="bg-primary text-primary-foreground py-4 px-6">
-          <h1 className="text-2xl font-bold">Booked History Details</h1>
+          <h1 className="text-2xl font-bold">Booked  Details</h1>
         </header>
         <main className="flex-1 py-8 px-4 md:px-8 lg:px-12">
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-6">
               <div>
-                <h2 className="text-xl font-semibold mb-2">Booking Details</h2>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-muted-foreground">Date</p>
@@ -171,6 +179,7 @@ const BookingDeatails: React.FC = () => {
                             api={api} setApi={setApi}
                               toggleButton={toggleButton}
                               open={open}
+                              data={data}
                             />
                           )}
                         </div>

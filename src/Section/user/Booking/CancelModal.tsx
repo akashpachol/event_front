@@ -6,6 +6,8 @@ import Modal from '@mui/material/Modal';
 import Swal from "sweetalert2";
 import { bookingCancel } from '../../../service/api/user/apiMethod';
 import { toast } from 'react-toastify';
+import { useSocket } from '../../../utils/context/SocketContext';
+import { dataProps } from '../../Manager/Layout/Notification';
 
 const style = {
   position: 'absolute' ,
@@ -38,10 +40,13 @@ export type CancelModalProps = {
     id:string|undefined,
     api:boolean,
     setApi:React.Dispatch<React.SetStateAction<boolean>>;
+    data:dataProps
   };
 
 
-const CancelModal:React.FC<CancelModalProps>=({id,toggleButton,open,api,setApi})=> {
+const CancelModal:React.FC<CancelModalProps>=({id,toggleButton,open,api,setApi,data})=> {
+  const {  socket } = useSocket();
+
     const formik = useFormik({
         initialValues,
         validationSchema,
@@ -62,8 +67,12 @@ const CancelModal:React.FC<CancelModalProps>=({id,toggleButton,open,api,setApi})
       bookingCancel(id, values.name)
         .then((response) => {
           if (response.status === "success") {
-            console.log('succes');
+            console.log(data.reciver,'jfjjffj',data);
+            
+            socket?.emit('notification',data.reciver);
+
             setApi(!api)
+            
           } else {
             toast.error(response.message);
           }

@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 
 
 import { toast } from "react-toastify";
-import { bookingData } from "../../../utils/types";
+import {  bookingVenderData } from "../../../utils/types";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../utils/redux/app/store";
 import { getManagerBookingDetails } from "../../../service/api/vender/apiMethod";
 
 const ManagerBookingDetails: React.FC = () => {
-  const [receivedData, setReceivedData] = useState<bookingData | null>(null);
+  const [receivedData, setReceivedData] = useState<bookingVenderData | null>(null);
   const book = useSelector((state: RootState) => state.book);
 
   useEffect(() => {
@@ -20,6 +20,7 @@ const ManagerBookingDetails: React.FC = () => {
       const response = await getManagerBookingDetails(book.data);
 
       if (response.data) {
+        
         setReceivedData(response.data);
       }
     } catch (error: unknown) {
@@ -30,6 +31,7 @@ const ManagerBookingDetails: React.FC = () => {
       }
     }
   };
+console.log(receivedData,'fff');
 
   return (
     <div className="flex flex-col min-h-screen mx-24 ">
@@ -48,8 +50,8 @@ const ManagerBookingDetails: React.FC = () => {
                     <p>{receivedData?.date}</p>
                   </div>
                   <div>
-                    <p className="text-muted-foreground">Time</p>
-                    {/* <p>{receivedData?.time}</p> */}
+                    <p className="text-muted-foreground">Price</p>
+                    <p>{receivedData?.total}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">Location</p>
@@ -58,29 +60,9 @@ const ManagerBookingDetails: React.FC = () => {
                       {receivedData?.venderData.state}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-muted-foreground">Duration</p>
-                    <p>
-                      {" "}
-                      {receivedData?.time == "full Day" ? (
-                        <p>12 hours</p>
-                      ) : (
-                        <p>6 hours</p>
-                      )}{" "}
-                      {receivedData?.time == "evening" ? (
-                        <p>(4:00 PM to 11:00 PM)</p>
-                      ) : receivedData?.time == "full Day" ? (
-                        <p>(9:00 AM to 11:00 PM)</p>
-                      ) : (
-                        <p>(9:00 AM to 3:00 PM)</p>
-                      )}
-                    </p>
-                  </div>
+                 
                
-                  <div>
-                    <p className="text-muted-foreground">Price</p>
-                    <p>{receivedData?.total}</p>
-                  </div>
+               
                 </div>
               </div>
               <div>
@@ -90,17 +72,15 @@ const ManagerBookingDetails: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <img
                       src={receivedData?.venderData.image[0]}
-                      width={300}
-                      height={200}
+                    
                       alt="History Image 1"
-                      className="rounded-lg object-cover"
+                      className="rounded-lg object-cover  w-96 h-60"
                     />
                     <img
                       src={receivedData?.venderData.image[1]}
-                      width={300}
-                      height={200}
+                   
                       alt="History Image 2"
-                      className="rounded-lg object-cover"
+                      className="rounded-lg object-cover w-96 h-60"
                     />
                   </div>
                 </div>

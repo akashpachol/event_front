@@ -20,7 +20,7 @@ import Offer from "../../Section/Manager/Offer";
 import NotFound from "../../components/NotFound/NotFound";
 import Chat from "../../Section/Manager/chat";
 import Wallet from "../../Section/Manager/Wallet";
-import CallerVideo from "../../Section/Manager/chat/viedo/CallerVideo";
+import VideoCall from "../../Section/Manager/chat/Viedo/ViedoCall";
 
 
 const ManagerRouter = () => {
@@ -123,11 +123,10 @@ const ManagerRouter = () => {
         
         },
         {
-          path: "viedoCall",
-          element:(   <CallerVideo />),  
-        
+          path: "video-call/:roomId/:userId",
+          element: <VideoCall />
         },
-   
+  
       ],
     },
   ];

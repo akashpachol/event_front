@@ -9,25 +9,29 @@ import { chatAdd } from "../../../../utils/redux/slice/chatSlice";
 
 type chatData = {
   data: chat[];
+  setApi: React.Dispatch<React.SetStateAction<boolean>>;
+  api:boolean
+  showChat: React.Dispatch<React.SetStateAction<boolean>>;
 };
-const Conversation: React.FC<chatData> = ({ data }) => {
+const Conversation: React.FC<chatData> = ({ data, showChat,setApi,api }) => {
   const [state, setState] = useState("");
-  const { onlineUsers ,socket} = useSocket();
+  const { onlineUsers, socket } = useSocket();
   const user = useSelector((state: RootState) => state.user);
 
   const dispatch = useDispatch();
-   
-  const handleClick=(conversation:chat)=>{
-  
-      if (conversation._id) {
-          setState(conversation._id)
-          socket?.emit('join chat', conversation?._id);
 
-          dispatch(chatAdd({ data: conversation }));
-      }
-     
-  
-  }
+  const handleClick = (conversation: chat) => {
+    if (conversation._id) {
+      setState(conversation._id);
+      showChat(true);
+      setApi(!api)
+      socket?.emit("join chat", conversation?._id);
+
+      dispatch(chatAdd({ data: conversation }));
+    }
+  };
+
+  console.log(data, "fkfkkfkk");
 
   return (
     <>
@@ -38,7 +42,7 @@ const Conversation: React.FC<chatData> = ({ data }) => {
               <div
                 key={conversation._id}
                 className="space-y-2"
-                onClick={() =>handleClick(conversation)}
+                onClick={() => handleClick(conversation)}
               >
                 <p>
                   <Link
@@ -59,6 +63,7 @@ const Conversation: React.FC<chatData> = ({ data }) => {
                         ""
                       )}
                     </div>
+
                     <div className="flex-1 space-y-1 hidden lg:block">
                       <div className="flex  justify-between">
                         <div>
@@ -74,12 +79,10 @@ const Conversation: React.FC<chatData> = ({ data }) => {
             </>
           ) : (
             <>
-         
-
               <div
                 key={conversation._id}
                 className="space-y-2"
-                onClick={() =>handleClick(conversation)}
+                onClick={() => handleClick(conversation)}
               >
                 <p>
                   <Link
@@ -91,7 +94,11 @@ const Conversation: React.FC<chatData> = ({ data }) => {
                     <div className="relative">
                       <img
                         className="w-10 h-10 rounded-full"
-                        src="https://img.freepik.com/premium-vector/young-smiling-man-avatar-man-with-brown-beard-mustache-hair-wearing-yellow-sweater-sweatshirt-3d-vector-people-character-illustration-cartoon-minimal-style_365941-860.jpg"
+                        src={    
+                          getSender(user.userId, conversation.users)
+                            .image? getSender(user.userId, conversation.users)
+                            .image:`https://img.freepik.com/premium-vector/young-smiling-man-avatar-man-with-brown-beard-mustache-hair-wearing-yellow-sweater-sweatshirt-3d-vector-people-character-illustration-cartoon-minimal-style_365941-860.jpg`
+                        }
                         alt=""
                       />
                       {onlineUsers?.includes(
@@ -111,6 +118,13 @@ const Conversation: React.FC<chatData> = ({ data }) => {
                                 .username
                             }
                           </h4>
+                        </div>
+                        <div className="items-center me-3">
+                          {/* {getUnreadmessage(user.userId,conversation.messages) > 0 ? (
+                            <span className="  bg-red-600 text-white text-xs  font-bold rounded-full w-7 h-7 flex items-center justify-center">{getUnreadmessage(user.userId,conversation.messages)}</span>
+                          ) : (
+                            ""
+                          )} */}
                         </div>
                       </div>
                     </div>
